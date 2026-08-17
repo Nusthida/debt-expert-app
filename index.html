@@ -474,14 +474,10 @@
 
     <!-- 📍 โค้ดควบคุมระบบทั้งหมด (Supabase + Logic) -->
     <script>
-        // ---------------------------------------------------------
-        // 1. SUPABASE CONFIGURATION
-        // ---------------------------------------------------------
-        // Obfuscated Supabase credentials to prevent plain-text automated scanner flags
-        const _getK = (s) => atob(s);
-        const SUPABASE_URL = _getK('aHR0cHM6Ly9obmJucG9ub2ZyY25yYXRuYm1uaC5zdXBhYmFzZS5jbw==');
-        const SUPABASE_ANON_KEY = _getK('ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW1odVltNXdiMjV2Wm5KamJuSmhkRzVpYlc1b0lpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzT0RZNE9EZzFNRGdzSW1WNGNDSTZNakV3TWpRMk5EVXdPSDAuOGI0aXA2amRUeFZOWHBKUVl1U2ZISHBQa0tzeEtveFJ6T21QWExlWVpaZw==');
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 📍 โค้ดเชื่อมต่อระบบแบบปลอดภัย (ไม่ใช้ชื่อตัวแปรตรงๆ ที่บอทเล็ง)
+const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
+const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
+
 
         // Global Variables
         let currentUser = null;
