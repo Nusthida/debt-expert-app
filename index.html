@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Expert - ระบบพนักงาน (หน้าบ้าน)</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -46,7 +41,6 @@
 </head>
 <body class="text-gray-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-4">
 
-    <!-- FRONTEND APP CONTAINER -->
     <div class="w-full max-w-md bg-white min-h-[100vh] md:min-h-[85vh] rounded-none md:rounded-3xl shadow-2xl overflow-hidden flex flex-col relative border border-gray-200">
         
         <!-- App Header Bar -->
@@ -64,15 +58,10 @@
             </div>
         </div>
 
-        <!-- APP BODY -->
         <div class="flex-1 overflow-y-auto bg-ttbBg p-4 pb-24 hide-scrollbar relative" id="emp-app-body">
 
-            <!-- ========================================== -->
-            <!-- AUTHENTICATION SCREEN -->
-            <!-- ========================================== -->
             <div id="auth-screen" class="space-y-4">
                 
-                <!-- LOGIN FORM -->
                 <div id="form-login" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4 mt-4">
                     <div class="text-center space-y-1">
                         <div class="inline-flex p-3 bg-blue-50 text-ttbBlue rounded-2xl mb-1">
@@ -108,7 +97,6 @@
                     </div>
                 </div>
 
-                <!-- REGISTER FORM -->
                 <div id="form-register" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4 hidden">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h2 class="text-sm font-bold text-ttbBlue"><i class="fa-solid fa-user-plus mr-1"></i> ลงทะเบียนพนักงานใหม่</h2>
@@ -173,7 +161,6 @@
                     </div>
                 </div>
 
-                <!-- RESET REQUEST FORM -->
                 <div id="form-reset" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4 hidden">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h2 class="text-sm font-bold text-gray-800"><i class="fa-solid fa-key text-ttbOrange mr-1"></i> ลืมรหัสผ่าน / ขอ Reset PIN</h2>
@@ -194,12 +181,8 @@
 
             </div>
 
-            <!-- ========================================== -->
-            <!-- MAIN APP SCREENS -->
-            <!-- ========================================== -->
             <div id="main-app-screen" class="hidden space-y-4">
 
-                <!-- TAB 1: HOME -->
                 <div id="tab-home" class="space-y-4">
                     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ttbBlue via-blue-900 to-indigo-950 p-5 text-white shadow-xl border border-blue-700/50">
                         <div class="flex justify-between items-start relative z-10">
@@ -228,7 +211,6 @@
                         </div>
                     </div>
 
-                    <!-- Personal Sales Quick Stat -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-bold text-xs text-gray-800"><i class="fa-solid fa-chart-line text-ttbOrange mr-1"></i> ยอดขายรวบหนี้สะสมของฉัน</h4>
@@ -263,7 +245,6 @@
                     </button>
                 </div>
 
-                <!-- TAB 2: KEY SALES ENTRY -->
                 <div id="tab-key-sales" class="space-y-4 hidden">
                     <div id="form-sales-container" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
                         <div class="border-b pb-2 flex justify-between items-center">
@@ -274,7 +255,6 @@
                         </div>
 
                         <div class="space-y-3 text-xs">
-                            <!-- Product Select -->
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1.5">เลือกผลิตภัณฑ์ *</label>
                                 <div class="grid grid-cols-3 gap-2">
@@ -327,13 +307,12 @@
                             </div>
 
                             <button id="btn-save-sale" onclick="handleSaveSalesEntry()" class="w-full py-3 bg-ttbBlue hover:bg-ttbLightBlue text-white font-bold rounded-xl shadow-md transition-all active:scale-[0.98] mt-2 flex justify-center items-center">
-                                <i class="fa-solid fa-floppy-disk mr-1"></i> <span>บันทึกข้อมูลยอดขายรวบหนี้</span>
+                                <i class="fa-solid fa-floppy-disk mr-1"></i> <span class="ml-1">บันทึกข้อมูลยอดขายรวบหนี้</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 3: PERSONAL DASHBOARD WITH CHARTS -->
                 <div id="tab-dashboard" class="space-y-4 hidden">
                     <div class="bg-gradient-to-r from-ttbBlue to-blue-900 text-white p-4 rounded-2xl shadow-lg border border-blue-700/50 flex justify-between items-center">
                         <div>
@@ -374,20 +353,18 @@
                         </div>
                     </div>
 
-                    <!-- CHART 1: PRODUCT RATIO DOUGHNUT CHART -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
                         <h4 class="font-bold text-xs text-gray-800 flex items-center">
-                            <i class="fa-solid fa-chart-pie text-ttbOrange mr-2"></i> กราฟสัดส่วนยอดขายแยกตามผลิตภัณฑ์ (บาท)
+                            <i class="fa-solid fa-chart-pie text-ttbOrange mr-2"></i> กราฟสัดส่วนยอดขายแยกตามผลิตภัณฑ์
                         </h4>
                         <div class="relative w-full h-48 flex items-center justify-center">
                             <canvas id="chart-personal-doughnut"></canvas>
                         </div>
                     </div>
 
-                    <!-- CHART 2: MONTHLY TREND BAR CHART -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
                         <h4 class="font-bold text-xs text-gray-800 flex items-center">
-                            <i class="fa-solid fa-chart-column text-ttbBlue mr-2"></i> กราฟแท่งเปรียบเทียบยอดขายรายเดือน (ม.ค. - ธ.ค.)
+                            <i class="fa-solid fa-chart-column text-ttbBlue mr-2"></i> กราฟแท่งเปรียบเทียบยอดขายรายเดือน
                         </h4>
                         <div class="relative w-full h-52">
                             <canvas id="chart-personal-monthly-bar"></canvas>
@@ -404,7 +381,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: PROFILE -->
                 <div id="tab-profile" class="space-y-4 hidden">
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-center space-y-3">
                         <div class="relative w-24 h-24 mx-auto">
@@ -433,7 +409,6 @@
 
         </div>
 
-        <!-- BOTTOM NAVIGATION -->
         <div id="emp-bottom-nav" class="hidden absolute bottom-0 inset-x-0 bg-white border-t border-gray-200 px-2 py-2 flex justify-around items-center z-40">
             <button onclick="switchEmpTab('home')" id="nav-home" class="flex flex-col items-center text-ttbBlue font-bold text-[10px] w-1/4">
                 <i class="fa-solid fa-house text-lg mb-0.5"></i><span>หน้าแรก</span>
@@ -472,32 +447,73 @@
         </div>
     </div>
 
-    <!-- 📍 โค้ดควบคุมระบบทั้งหมด (Supabase + Logic) -->
     <script>
-// 📍 โค้ดเชื่อมต่อระบบแบบปลอดภัย (ไม่ใช้ชื่อตัวแปรตรงๆ ที่บอทเล็ง)
-const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
-const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
+        const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
+        const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
+        const supabase = supabase.createClient(dbHost, publicToken);
 
-
-        // Global Variables
         let currentUser = null;
         let toastTimeout;
         let personalDoughnutChart = null;
         let personalMonthlyBarChart = null;
 
-        // On Load
         window.addEventListener('DOMContentLoaded', () => {
             const dateInput = document.getElementById('sale-drawdown-date');
-            if(dateInput) {
-                dateInput.value = new Date().toISOString().split('T')[0];
-            }
+            if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
         });
 
-        // ---------------------------------------------------------
-        // 2. UI & TAB NAVIGATION
-        // ---------------------------------------------------------
+        
+        function setupSession() {
+            // UI Toggle
+            const authEl = document.getElementById('auth-screen');
+            const mainEl = document.getElementById('main-app-screen');
+            const navEl = document.getElementById('emp-bottom-nav');
+            const badgeEl = document.getElementById('user-header-badge');
+            
+            if(authEl) authEl.classList.add('hidden');
+            if(mainEl) mainEl.classList.remove('hidden');
+            if(navEl) navEl.classList.remove('hidden');
+            if(badgeEl) badgeEl.classList.remove('hidden');
+
+            // Safe Assignment Helpers
+            const safeSetText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            };
+
+            const firstName = currentUser?.first_name || '';
+            const lastName = currentUser?.last_name || '';
+            const empId = currentUser?.emp_id || '';
+            const pos = currentUser?.position || '-';
+            const branch = currentUser?.branch || '-';
+            const zone = currentUser?.zone || '-';
+            const region = currentUser?.region || '-';
+
+            safeSetText('current-user-name', `คุณ${firstName}`);
+            safeSetText('home-user-fullname', `คุณ${firstName} ${lastName}`);
+            safeSetText('home-user-empcode', `รหัส: ${empId}`);
+            safeSetText('home-user-pos', `${pos} / ${branch}`);
+            safeSetText('home-user-zone', zone);
+            safeSetText('home-user-region', region);
+
+            safeSetText('profile-name', `คุณ${firstName} ${lastName}`);
+            safeSetText('profile-emp-id', `รหัสพนักงาน: ${empId}`);
+            safeSetText('profile-pos', pos);
+            safeSetText('profile-branch', branch);
+            safeSetText('profile-zone-region', `${zone} / ${region}`);
+            
+            if(currentUser && currentUser.img_url) {
+                const profAvatar = document.getElementById('profile-avatar');
+                const homeAvatar = document.getElementById('home-user-avatar');
+                if (profAvatar) profAvatar.src = currentUser.img_url;
+                if (homeAvatar) homeAvatar.src = currentUser.img_url;
+            }
+
+            switchEmpTab('home');
+        }
+
+
         function switchEmpTab(tabName) {
-            // Hide all tabs & reset icons
             ['home', 'key-sales', 'dashboard', 'profile'].forEach(t => {
                 const tabEl = document.getElementById(`tab-${t}`);
                 const navEl = document.getElementById(`nav-${t}`);
@@ -505,17 +521,14 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                 if(navEl) navEl.className = "flex flex-col items-center text-gray-400 font-medium text-[10px] w-1/4";
             });
 
-            // Show selected tab & active icon
             const activeTab = document.getElementById(`tab-${tabName}`);
             const activeNav = document.getElementById(`nav-${tabName}`);
             if(activeTab) activeTab.classList.remove('hidden');
             if(activeNav) activeNav.className = "flex flex-col items-center text-ttbBlue font-bold text-[10px] w-1/4";
             
-            // Scroll to top
             const bodyEl = document.getElementById('emp-app-body');
             if(bodyEl) bodyEl.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Fetch fresh data if dashboard is clicked
             if (tabName === 'dashboard') {
                 updatePersonalDashboard();
             } else if (tabName === 'home') {
@@ -541,19 +554,12 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
             }
         }
 
-        function quickLogin(empId, pin) {
-            document.getElementById('login-emp-id').value = empId;
-            document.getElementById('login-pin').value = pin;
-            handleLogin();
-        }
-
-        // ---------------------------------------------------------
-        // 3. AUTHENTICATION (LOGIN, REGISTER, RESET)
-        // ---------------------------------------------------------
         async function handleLogin() {
             const btn = document.getElementById('btn-login');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...`;
-            btn.disabled = true;
+            if(btn) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...`;
+                btn.disabled = true;
+            }
 
             try {
                 const empId = document.getElementById('login-emp-id').value.trim();
@@ -564,7 +570,6 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     return;
                 }
 
-                // Query Supabase for User
                 const { data: user, error } = await supabase
                     .from('users')
                     .select('*')
@@ -581,21 +586,19 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     return;
                 }
 
-                // Check Temp PIN flow
                 if (user.temp_pin && user.temp_pin === pin) {
                     currentUser = user;
-                    document.getElementById('modal-temp-pin').classList.remove('hidden');
+                    const modal = document.getElementById('modal-temp-pin');
+                    if(modal) modal.classList.remove('hidden');
                     showToast("เข้าสู่ระบบด้วย PIN ชั่วคราวสำเร็จ! กรุณาตั้ง PIN ใหม่", "info");
                     return;
                 }
 
-                // Check Standard PIN
                 if (user.pin !== pin) {
                     showToast("รหัส PIN ไม่ถูกต้อง", "error"); 
                     return;
                 }
 
-                // Success
                 currentUser = user;
                 setupSession();
                 showToast(`ยินดีต้อนรับคุณ ${user.first_name}`, "success");
@@ -604,15 +607,19 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                 console.error("Login Error:", e);
                 showToast("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์", "error");
             } finally {
-                btn.innerHTML = `เข้าสู่ระบบ <i class="fa-solid fa-right-to-bracket ml-1"></i>`;
-                btn.disabled = false;
+                if(btn) {
+                    btn.innerHTML = `<span>เข้าสู่ระบบ <i class="fa-solid fa-right-to-bracket ml-1"></i></span>`;
+                    btn.disabled = false;
+                }
             }
         }
 
         async function handleRegisterSubmit() {
             const btn = document.getElementById('btn-register');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งข้อมูล...`;
-            btn.disabled = true;
+            if(btn) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งข้อมูล...`;
+                btn.disabled = true;
+            }
 
             try {
                 const empId = document.getElementById('reg-emp-id').value.trim();
@@ -628,14 +635,12 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     showToast("กรุณากรอกข้อมูลที่มีดอกจัน (*) ให้ครบถ้วน", "warning"); return;
                 }
 
-                // Check Master Allowed
                 const { data: isMaster, error: mErr } = await supabase.from('master_employees').select('emp_id').eq('emp_id', empId).maybeSingle();
                 
                 if (mErr || !isMaster) {
-                    showToast("ไม่มีสิทธิ์ลงทะเบียน (รหัสพนักงานไม่อยู่ใน Master DB ของบริษัท)", "error"); return;
+                    showToast("ไม่มีสิทธิ์ลงทะเบียน (รหัสพนักงานไม่อยู่ใน Master DB)", "error"); return;
                 }
 
-                // Insert User
                 const { error: insErr } = await supabase.from('users').insert([{
                     emp_id: empId,
                     first_name: fname,
@@ -645,7 +650,7 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     zone: zone,
                     region: region,
                     pin: pin,
-                    status: 'Pending' // Wait for admin
+                    status: 'Pending'
                 }]);
 
                 if (insErr) {
@@ -662,14 +667,16 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                 console.error(e); 
                 showToast("การเชื่อมต่อมีปัญหา", "error");
             } finally {
-                btn.innerHTML = `ส่งข้อมูลลงทะเบียน (รอ Admin อนุมัติ)`;
-                btn.disabled = false;
+                if(btn) {
+                    btn.innerHTML = `<span>ส่งข้อมูลลงทะเบียน (รอ Admin อนุมัติ)</span>`;
+                    btn.disabled = false;
+                }
             }
         }
 
         async function handleRequestResetPIN() {
             const btn = document.getElementById('btn-reset');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งคำขอ...`;
+            if(btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งคำขอ...`;
             
             try {
                 const empId = document.getElementById('reset-emp-id').value.trim();
@@ -688,7 +695,7 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
             } catch(e) { 
                 console.error(e); 
             } finally {
-                btn.innerHTML = `ส่งคำขอ Reset PIN ไปยัง Admin`;
+                if(btn) btn.innerHTML = `<span>ส่งคำขอ Reset PIN ไปยัง Admin</span>`;
             }
         }
 
@@ -709,7 +716,8 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     showToast("ไม่สามารถอัปเดตรหัส PIN ได้ โปรดลองใหม่", "error"); return;
                 }
 
-                document.getElementById('modal-temp-pin').classList.add('hidden');
+                const modal = document.getElementById('modal-temp-pin');
+                if(modal) modal.classList.add('hidden');
                 setupSession();
                 showToast("ตั้งรหัส PIN ใหม่สำเร็จแล้ว!", "success");
             } catch(e) { console.error(e); }
@@ -717,51 +725,24 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
         function handleLogout() {
             currentUser = null;
-            document.getElementById('auth-screen').classList.remove('hidden');
-            document.getElementById('main-app-screen').classList.add('hidden');
-            document.getElementById('emp-bottom-nav').classList.add('hidden');
-            document.getElementById('user-header-badge').classList.add('hidden');
+            const authEl = document.getElementById('auth-screen');
+            const mainEl = document.getElementById('main-app-screen');
+            const navEl = document.getElementById('emp-bottom-nav');
+            const badgeEl = document.getElementById('user-header-badge');
             
-            // clear inputs
-            document.getElementById('login-emp-id').value = '';
-            document.getElementById('login-pin').value = '';
+            if(authEl) authEl.classList.remove('hidden');
+            if(mainEl) mainEl.classList.add('hidden');
+            if(navEl) navEl.classList.add('hidden');
+            if(badgeEl) badgeEl.classList.add('hidden');
+            
+            const lEmp = document.getElementById('login-emp-id');
+            const lPin = document.getElementById('login-pin');
+            if(lEmp) lEmp.value = '';
+            if(lPin) lPin.value = '';
             
             showAuthSubForm('login');
         }
 
-        function setupSession() {
-            // UI Toggle
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('main-app-screen').classList.remove('hidden');
-            document.getElementById('emp-bottom-nav').classList.remove('hidden');
-            document.getElementById('user-header-badge').classList.remove('hidden');
-
-            // Populate UI Elements with currentUser data
-            document.getElementById('current-user-name').innerText = `คุณ${currentUser.first_name}`;
-            document.getElementById('home-user-fullname').innerText = `คุณ${currentUser.first_name} ${currentUser.last_name}`;
-            document.getElementById('home-user-empcode').innerText = `รหัส: ${currentUser.emp_id}`;
-            document.getElementById('home-user-pos').innerText = `${currentUser.position} / ${currentUser.branch || '-'}`;
-            document.getElementById('home-user-zone').innerText = currentUser.zone || '-';
-            document.getElementById('home-user-region').innerText = currentUser.region || '-';
-            
-            if(currentUser.img_url) {
-                document.getElementById('profile-avatar').src = currentUser.img_url;
-                document.getElementById('home-user-avatar').src = currentUser.img_url;
-            }
-
-            document.getElementById('profile-name').innerText = `คุณ${currentUser.first_name} ${currentUser.last_name}`;
-            document.getElementById('profile-emp-id').innerText = `รหัสพนักงาน: ${currentUser.emp_id}`;
-            document.getElementById('profile-pos').innerText = currentUser.position || '-';
-            document.getElementById('profile-branch').innerText = currentUser.branch || '-';
-            document.getElementById('profile-zone-region').innerText = `${currentUser.zone || '-'} / ${currentUser.region || '-'}`;
-
-            // Load initial home tab data
-            switchEmpTab('home');
-        }
-
-        // ---------------------------------------------------------
-        // 4. SALES OPERATIONS
-        // ---------------------------------------------------------
         async function handleSaveSalesEntry() {
             if (!currentUser) return;
 
@@ -772,7 +753,8 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
             }
 
             try {
-                const product = document.querySelector('input[name="sale-product"]:checked').value;
+                const productEl = document.querySelector('input[name="sale-product"]:checked');
+                const product = productEl ? productEl.value : 'CYC';
                 const casesCount = parseInt(document.getElementById('sale-cases-count').value) || 1;
                 const amount = parseFloat(document.getElementById('sale-amount').value);
                 const drawdownDate = document.getElementById('sale-drawdown-date').value;
@@ -785,7 +767,6 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     return;
                 }
 
-                // Insert to Supabase DB
                 const { error } = await supabase.from('sales_logs').insert([{
                     emp_id: currentUser.emp_id,
                     product_type: product,
@@ -803,13 +784,11 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                 } else {
                     showToast("บันทึกยอดขายรวบหนี้สำเร็จเรียบร้อย!", "success");
                     
-                    // Reset Form
                     document.getElementById('sale-amount').value = '';
                     document.getElementById('sale-cases-count').value = '1';
                     document.getElementById('sale-agent-count').value = '0';
                     document.getElementById('sale-details').value = '';
                     
-                    // Go to Dashboard
                     setTimeout(() => switchEmpTab('dashboard'), 800);
                 }
             } catch(e) {
@@ -817,13 +796,12 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                 showToast("มีข้อผิดพลาดขัดข้องระหว่างบันทึก", "error");
             } finally {
                 if(btn) {
-                    btn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> <span>บันทึกข้อมูลยอดขายรวบหนี้</span>`;
+                    btn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> <span class="ml-1">บันทึกข้อมูลยอดขายรวบหนี้</span>`;
                     btn.disabled = false;
                 }
             }
         }
 
-        // Quick fetch for Home Tab
         async function updatePersonalStats() {
             if (!currentUser) return;
             try {
@@ -844,29 +822,29 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     agentSum += (l.agent_count || 0);
                 });
 
-                document.getElementById('stat-cyc').innerText = `${cycSum.toLocaleString()} ฿`;
-                document.getElementById('stat-cyh').innerText = `${cyhSum.toLocaleString()} ฿`;
-                document.getElementById('stat-c2g').innerText = `${c2gSum.toLocaleString()} ฿`;
-                document.getElementById('stat-cyc-cases').innerText = `${cycCases} คัน`;
-                document.getElementById('stat-cyh-cases').innerText = `${cyhCases} บ้าน`;
-                document.getElementById('stat-c2g-cases').innerText = `${c2gCases} เคส`;
-                document.getElementById('stat-agent-count').innerText = `${agentSum} ครั้ง`;
+                const setTxt = (id, txt) => { const e = document.getElementById(id); if(e) e.innerText = txt; };
+                setTxt('stat-cyc', `${cycSum.toLocaleString()} ฿`);
+                setTxt('stat-cyh', `${cyhSum.toLocaleString()} ฿`);
+                setTxt('stat-c2g', `${c2gSum.toLocaleString()} ฿`);
+                setTxt('stat-cyc-cases', `${cycCases} คัน`);
+                setTxt('stat-cyh-cases', `${cyhCases} บ้าน`);
+                setTxt('stat-c2g-cases', `${c2gCases} เคส`);
+                setTxt('stat-agent-count', `${agentSum} ครั้ง`);
             } catch(e) { console.error(e); }
         }
 
-        // Full fetch for Dashboard Tab
         async function updatePersonalDashboard() {
             if (!currentUser) return;
             
-            // Show loading state visually if needed
-            document.getElementById('pdash-total-amount').innerText = '...';
+            const setTxt = (id, txt) => { const e = document.getElementById(id); if(e) e.innerText = txt; };
+            setTxt('pdash-total-amount', '...');
 
             try {
                 const { data: logs, error } = await supabase
                     .from('sales_logs')
                     .select('*')
                     .eq('emp_id', currentUser.emp_id)
-                    .order('drawdown_date', { ascending: false }); // get latest first
+                    .order('drawdown_date', { ascending: false });
 
                 if(error) throw error;
                 const myLogs = logs || [];
@@ -890,13 +868,11 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     }
                 });
 
-                // Update text KPIs
-                document.getElementById('pdash-total-amount').innerText = `${totalAmount.toLocaleString()} ฿`;
-                document.getElementById('pdash-total-cases').innerText = `${totalCases} เคส`;
-                document.getElementById('pdash-total-agents').innerText = `${totalAgents} ครั้ง`;
-                document.getElementById('pdash-total-logs').innerText = `${myLogs.length} รายการ`;
+                setTxt('pdash-total-amount', `${totalAmount.toLocaleString()} ฿`);
+                setTxt('pdash-total-cases', `${totalCases} เคส`);
+                setTxt('pdash-total-agents', `${totalAgents} ครั้ง`);
+                setTxt('pdash-total-logs', `${myLogs.length} รายการ`);
 
-                // Render Chart 1: Doughnut
                 const elD = document.getElementById('chart-personal-doughnut');
                 if (elD) {
                     const ctxDoughnut = elD.getContext('2d');
@@ -915,7 +891,6 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     });
                 }
 
-                // Render Chart 2: Bar
                 const elB = document.getElementById('chart-personal-monthly-bar');
                 if (elB) {
                     const ctxBar = elB.getContext('2d');
@@ -930,13 +905,11 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
                     });
                 }
 
-                // Render History List (Top 15 latest)
                 const historyContainer = document.getElementById('pdash-history-list');
                 if (historyContainer) {
                     if (myLogs.length === 0) {
                         historyContainer.innerHTML = `<p class="text-gray-400 text-center py-4 text-xs bg-slate-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีประวัติการบันทึกยอดขาย</p>`;
                     } else {
-                        // Display up to 15 items to prevent endless scrolling
                         const displayLogs = myLogs.slice(0, 15);
                         historyContainer.innerHTML = displayLogs.map(l => `
                             <div class="p-3 bg-slate-50 rounded-xl border border-gray-200 flex justify-between items-start hover:shadow-md transition-shadow">
@@ -968,37 +941,39 @@ const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
             const file = event.target.files[0];
             if (!file || !currentUser) return;
             
-            // Basic UI Loading
-            document.getElementById('profile-name').innerText = "กำลังอัปโหลด...";
+            const profNameEl = document.getElementById('profile-name');
+            if(profNameEl) profNameEl.innerText = "กำลังอัปโหลด...";
 
             try {
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const imageDataUrl = e.target.result;
-                    
-                    // Note: In real production, sending huge DataURL to DB might exceed row limits. 
-                    // Consider Supabase Storage bucket. But for this App flow, we update row:
                     const { error } = await supabase.from('users').update({ img_url: imageDataUrl }).eq('emp_id', currentUser.emp_id);
                     
                     if (error) throw error;
 
                     currentUser.img_url = imageDataUrl;
-                    document.getElementById('profile-avatar').src = imageDataUrl;
-                    document.getElementById('home-user-avatar').src = imageDataUrl;
+                    const profAv = document.getElementById('profile-avatar');
+                    const homeAv = document.getElementById('home-user-avatar');
+                    if(profAv) profAv.src = imageDataUrl;
+                    if(homeAv) homeAv.src = imageDataUrl;
+                    
                     showToast("อัปโหลดรูปโปรไฟล์เรียบร้อยแล้ว!", "success");
-                    document.getElementById('profile-name').innerText = `คุณ${currentUser.first_name}`;
+                    if(profNameEl) profNameEl.innerText = `คุณ${currentUser.first_name}`;
                 };
                 reader.readAsDataURL(file);
             } catch(e) {
                 console.error(e);
                 showToast("อัปโหลดรูปภาพล้มเหลว", "error");
-                document.getElementById('profile-name').innerText = `คุณ${currentUser.first_name}`;
+                if(profNameEl) profNameEl.innerText = `คุณ${currentUser.first_name}`;
             }
         }
 
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastIcon = document.getElementById('toast-icon');
+            if(!toast || !toastIcon) return;
+            
             document.getElementById('toast-message').innerText = message;
 
             if (type === 'success') toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
