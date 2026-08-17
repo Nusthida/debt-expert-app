@@ -450,7 +450,7 @@
     <script>
         const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
         const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
-        const supabase = supabase.createClient(dbHost, publicToken);
+        const supabaseClient = window.supabase.createClient(dbHost, publicToken);
 
         let currentUser = null;
         let toastTimeout;
@@ -635,13 +635,13 @@
                     showToast("กรุณากรอกข้อมูลที่มีดอกจัน (*) ให้ครบถ้วน", "warning"); return;
                 }
 
-                const { data: isMaster, error: mErr } = await supabase.from('master_employees').select('emp_id').eq('emp_id', empId).maybeSingle();
+                const { data: isMaster, error: mErr } = await supabaseClient.from('master_employees').select('emp_id').eq('emp_id', empId).maybeSingle();
                 
                 if (mErr || !isMaster) {
                     showToast("ไม่มีสิทธิ์ลงทะเบียน (รหัสพนักงานไม่อยู่ใน Master DB)", "error"); return;
                 }
 
-                const { error: insErr } = await supabase.from('users').insert([{
+                const { error: insErr } = await supabaseClient.from('users').insert([{
                     emp_id: empId,
                     first_name: fname,
                     last_name: lname,
@@ -684,7 +684,7 @@
                     showToast("กรุณากรอกรหัสพนักงานก่อน", "warning"); return;
                 }
                 
-                const { error } = await supabase.from('users').update({ status: 'ResetRequest' }).eq('emp_id', empId);
+                const { error } = await supabaseClient.from('users').update({ status: 'ResetRequest' }).eq('emp_id', empId);
                 
                 if (error) {
                     showToast("ไม่พบรหัสพนักงานในระบบ หรือเชื่อมต่อล้มเหลว", "error"); 
@@ -708,7 +708,7 @@
                     showToast("กรุณากรอก PIN 6 หลักและยืนยันให้ตรงกัน", "warning"); return;
                 }
 
-                const { error } = await supabase.from('users')
+                const { error } = await supabaseClient.from('users')
                     .update({ pin: pin1, temp_pin: null, status: 'Active' })
                     .eq('emp_id', currentUser.emp_id);
 
@@ -767,7 +767,7 @@
                     return;
                 }
 
-                const { error } = await supabase.from('sales_logs').insert([{
+                const { error } = await supabaseClient.from('sales_logs').insert([{
                     emp_id: currentUser.emp_id,
                     product_type: product,
                     cases_count: casesCount,
@@ -948,7 +948,7 @@
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const imageDataUrl = e.target.result;
-                    const { error } = await supabase.from('users').update({ img_url: imageDataUrl }).eq('emp_id', currentUser.emp_id);
+                    const { error } = await supabaseClient.from('users').update({ img_url: imageDataUrl }).eq('emp_id', currentUser.emp_id);
                     
                     if (error) throw error;
 
