@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Expert - ระบบผู้ดูแลระบบ (หลังบ้าน Admin)</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- 📍 จุดที่ 1: แทรก Supabase JS Library -->
+    <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -199,7 +202,7 @@
                         <button onclick="resetDashboardFilters()" class="text-xs text-rose-600 hover:underline font-semibold"><i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตตัวกรอง</button>
                     </div>
 
-                    <!-- Dropdowns -->
+                    <!-- Dropdowns & Filters -->
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">ตำแหน่ง</label>
@@ -372,256 +375,390 @@
 
     <!-- 📍 จุดที่ 2: โค้ดเชื่อมต่อ SUPABASE สำหรับแอดมิน -->
     <script>
-// ใส่ API Key และ URL จาก Supabase ของคุณที่นี่
-const SUPABASE_URL = 'https://hnbnponofrcnratnbmnh.supabase.co/rest/v1/';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_URL = 'https://hnbnponofrcnratnbmnh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let toastTimeout;
-let adminMonthlyBarChart = null;
-let adminProductPieChart = null;
+        let toastTimeout;
+        let adminMonthlyBarChart = null;
+        let adminProductPieChart = null;
 
-// เก็บข้อมูลไว้ในตัวแปรกลาง เพื่อลดการโหลดหลายรอบ
-let globalUsers = [];
-let globalSales = [];
-let globalMaster = [];
+        let globalUsers = [];
+        let globalSales = [];
+        let globalMaster = [];
 
-window.addEventListener('DOMContentLoaded', () => {
-    populateFilterOptions();
-    fetchInitialData();
-});
-
-// ฟังก์ชันดึงข้อมูลทั้งหมดจาก Supabase แค่รอบเดียว
-async function fetchInitialData() {
-    try {
-        // 1. ดึง Users
-        const { data: usersData, error: errU } = await supabase.from('users').select('*');
-        if (!errU) globalUsers = usersData || [];
-
-        // 2. ดึง Master Employees
-        const { data: masterData, error: errM } = await supabase.from('master_employees').select('*');
-        if (!errM) globalMaster = masterData || [];
-
-        // 3. ดึง Sales Logs (ใช้แบบปกติ ไม่ต้อง join .users() ป้องกัน error)
-        const { data: salesData, error: errS } = await supabase.from('sales_logs').select('*');
-        if (!errS) globalSales = salesData || [];
-
-        console.log("Data loaded successfully!");
-        renderAdminViews();
-        renderAdminDashboard();
-
-    } catch (err) {
-        console.error("Error loading data:", err);
-        showToast("มีปัญหาในการเชื่อมต่อฐานข้อมูล", "error");
-    }
-}
-
-function populateFilterOptions() {
-    // (คงฟังก์ชันเดิมไว้)
-    const positions = ["BM", "ABM", "CFSA", "CLSA", "CIFA", "CLSM", "สำนักงานใหญ่"];
-    const branches = ["สาขาซีคอน", "สาขาพารากอน", "สาขาแจ้งวัฒนะ", "สาขาเซ็นทรัลลาดพร้าว", "สาขารังสิต"];
-    
-    document.getElementById('filter-dash-pos').innerHTML = `<option value="ALL">-- ทุกตำแหน่ง --</option>` + positions.map(p => `<option value="${p}">${p}</option>`).join('');
-    document.getElementById('filter-dash-branch').innerHTML = `<option value="ALL">-- ทุกสาขา --</option>` + branches.map(b => `<option value="${b}">${b}</option>`).join('');
-}
-
-function switchAdminMenu(menuName) {
-    ['employees', 'dashboard', 'sales'].forEach(m => {
-        document.getElementById(`admin-menu-${m}`).classList.add('hidden');
-        document.getElementById(`menu-btn-${m}`).className = "py-3 px-5 text-gray-500 hover:text-ttbBlue flex items-center space-x-2 whitespace-nowrap";
-    });
-
-    document.getElementById(`admin-menu-${menuName}`).classList.remove('hidden');
-    document.getElementById(`menu-btn-${menuName}`).className = "py-3 px-5 text-ttbBlue border-b-2 border-ttbBlue flex items-center space-x-2 bg-white rounded-t-xl shadow-sm font-bold whitespace-nowrap";
-    
-    if (menuName === 'dashboard') renderAdminDashboard();
-    else renderAdminViews();
-}
-
-function switchEmpSubTab(tabName) {
-    ['approvals', 'resets', 'master'].forEach(t => {
-        document.getElementById(`emptab-${t}`).classList.add('hidden');
-        document.getElementById(`subbtn-${t}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200";
-    });
-
-    document.getElementById(`emptab-${tabName}`).classList.remove('hidden');
-    document.getElementById(`subbtn-${tabName}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-ttbBlue text-white shadow-sm";
-}
-
-function toggleAllMonths(checked) {
-    document.querySelectorAll('.month-checkbox').forEach(cb => cb.checked = checked);
-    renderAdminDashboard();
-}
-
-function resetDashboardFilters() {
-    document.getElementById('filter-dash-pos').value = 'ALL';
-    document.getElementById('filter-dash-zone').value = '';
-    document.getElementById('filter-dash-region').value = '';
-    document.getElementById('filter-dash-branch').value = 'ALL';
-    document.getElementById('filter-dash-product').value = 'ALL';
-    toggleAllMonths(true);
-}
-
-// 📊 สร้าง Dashboard สรุป
-function renderAdminDashboard() {
-    try {
-        const selPos = document.getElementById('filter-dash-pos').value;
-        const selZone = document.getElementById('filter-dash-zone').value.trim();
-        const selRegion = document.getElementById('filter-dash-region').value.trim();
-        const selProduct = document.getElementById('filter-dash-product').value;
-        const selectedMonths = Array.from(document.querySelectorAll('.month-checkbox:checked')).map(cb => cb.value);
-
-        // นำข้อมูล Sales มาเชื่อมกับ Users ด้วย Javascript แทน
-        const enrichedLogs = globalSales.map(s => {
-            const user = globalUsers.find(u => u.emp_id === s.emp_id) || {};
-            return { ...s, user_info: user };
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchInitialData();
         });
 
-        const filteredLogs = enrichedLogs.filter(log => {
-            const u = log.user_info;
-            if (selPos !== 'ALL' && u.position !== selPos) return false;
-            if (selZone && (!u.zone || !u.zone.includes(selZone))) return false;
-            if (selRegion && (!u.region || !u.region.includes(selRegion))) return false;
-            if (selProduct !== 'ALL' && log.product_type !== selProduct) return false;
-            if (selectedMonths.length > 0 && !selectedMonths.includes(log.target_month.toString())) return false;
-            return true;
-        });
-
-        let totalAmount = 0, totalCases = 0, totalAgents = 0;
-        let cycSum = 0, cyhSum = 0, c2gSum = 0;
-        const activeUserIds = new Set();
-        const monthlyAmountArray = Array(12).fill(0);
-
-        filteredLogs.forEach(s => {
-            totalAmount += s.amount || 0;
-            totalCases += (s.cases_count || 1);
-            totalAgents += s.agent_count || 0;
-            activeUserIds.add(s.emp_id);
-
-            if (s.product_type === 'CYC') cycSum += s.amount;
-            if (s.product_type === 'CYH') cyhSum += s.amount;
-            if (s.product_type === 'C2G') c2gSum += s.amount;
-
-            const mIdx = parseInt(s.target_month) - 1;
-            if (mIdx >= 0 && mIdx < 12) monthlyAmountArray[mIdx] += s.amount;
-        });
-
-        document.getElementById('adash-total-amount').innerText = `${totalAmount.toLocaleString()} ฿`;
-        document.getElementById('adash-total-cases').innerText = `${totalCases} เคส`;
-        document.getElementById('adash-total-agents').innerText = `${totalAgents} ครั้ง`;
-        document.getElementById('adash-active-users-count').innerText = `${activeUserIds.size} คน`;
-
-        const ctxBar = document.getElementById('chart-admin-monthly-bar');
-        if(ctxBar) {
-            if (adminMonthlyBarChart) adminMonthlyBarChart.destroy();
-            adminMonthlyBarChart = new Chart(ctxBar.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
-                    datasets: [{ label: 'ยอดขายรวม (บาท)', data: monthlyAmountArray, backgroundColor: '#002D63', borderRadius: 6 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        // 🌟 Tab Switching is 100% independent of Supabase queries!
+        function switchAdminMenu(menuName) {
+            ['employees', 'dashboard', 'sales'].forEach(m => {
+                const menuEl = document.getElementById(`admin-menu-${m}`);
+                const btnEl = document.getElementById(`menu-btn-${m}`);
+                if (menuEl) menuEl.classList.add('hidden');
+                if (btnEl) btnEl.className = "py-3 px-5 text-gray-500 hover:text-ttbBlue flex items-center space-x-2 whitespace-nowrap";
             });
+
+            const targetMenu = document.getElementById(`admin-menu-${menuName}`);
+            const targetBtn = document.getElementById(`menu-btn-${menuName}`);
+            if (targetMenu) targetMenu.classList.remove('hidden');
+            if (targetBtn) targetBtn.className = "py-3 px-5 text-ttbBlue border-b-2 border-ttbBlue flex items-center space-x-2 bg-white rounded-t-xl shadow-sm font-bold whitespace-nowrap";
+            
+            if (menuName === 'dashboard') renderAdminDashboard();
+            else renderAdminViews();
         }
 
-        const ctxPie = document.getElementById('chart-admin-product-pie');
-        if(ctxPie) {
-            if (adminProductPieChart) adminProductPieChart.destroy();
-            adminProductPieChart = new Chart(ctxPie.getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: ['CYC', 'CYH', 'C2G'],
-                    datasets: [{ data: [cycSum, cyhSum, c2gSum], backgroundColor: ['#002D63', '#F68B1F', '#10B981'] }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
+        function switchEmpSubTab(tabName) {
+            ['approvals', 'resets', 'master'].forEach(t => {
+                const tabEl = document.getElementById(`emptab-${t}`);
+                const btnEl = document.getElementById(`subbtn-${t}`);
+                if (tabEl) tabEl.classList.add('hidden');
+                if (btnEl) btnEl.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200";
             });
+
+            const activeTab = document.getElementById(`emptab-${tabName}`);
+            const activeBtn = document.getElementById(`subbtn-${tabName}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-ttbBlue text-white shadow-sm";
         }
 
-        document.getElementById('adash-table-body').innerHTML = filteredLogs.length === 0 ? 
-            `<tr><td colspan="12" class="p-4 text-center text-gray-400">ไม่พบข้อมูลที่ตรงกับตัวกรอง</td></tr>` :
-            filteredLogs.map(s => {
-                const u = s.user_info;
-                return `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-mono">${s.drawdown_date}</td>
-                        <td class="p-3 font-bold text-ttbBlue">${s.emp_id}</td>
-                        <td class="p-3">คุณ${u.first_name || ''}</td>
-                        <td class="p-3">${u.position || '-'}</td>
-                        <td class="p-3">${u.zone || '-'}</td>
-                        <td class="p-3 font-bold">${s.product_type}</td>
-                        <td class="p-3 text-right font-bold">${(s.amount||0).toLocaleString()} ฿</td>
-                        <td class="p-3 text-center">เดือน ${s.target_month}</td>
-                    </tr>
-                `;
-            }).join('');
-    } catch(err) {
-        console.error("Dashboard Error:", err);
-    }
-}
+        // ดึงข้อมูลล่วงหน้าใส่ตัวแปรกลางแบบปลอดภัย
+        async function fetchInitialData() {
+            try {
+                const { data: usersData } = await supabase.from('users').select('*');
+                globalUsers = usersData || [];
 
-// 📊 ดึงข้อมูลเพื่อแสดงตารางในหน้า Admin
-function renderAdminViews() {
-    try {
-        const pendingUsers = globalUsers.filter(u => u.status === 'Pending' || u.status === 'Active');
-        document.getElementById('count-pending').innerText = globalUsers.filter(u => u.status === 'Pending').length;
-        document.getElementById('table-approvals-body').innerHTML = pendingUsers.map(u => `
-            <tr class="hover:bg-slate-50">
-                <td class="p-3 font-bold text-ttbBlue">${u.emp_id}</td>
-                <td class="p-3">คุณ${u.first_name || '-'} ${u.last_name || ''}</td>
-                <td class="p-3">${u.position || '-'}</td>
-                <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${u.status}</span></td>
-                <td class="p-3 text-center">${u.status === 'Pending' ? `<button onclick="approveUser('${u.emp_id}')" class="px-3 py-1 bg-emerald-600 text-white rounded text-xs">อนุมัติ</button>` : `<span class="text-emerald-600 font-bold">อนุมัติแล้ว</span>`}</td>
-            </tr>
-        `).join('');
+                const { data: masterData } = await supabase.from('master_employees').select('*');
+                globalMaster = masterData || [];
 
-        document.getElementById('table-master-emp-body').innerHTML = globalMaster.map(m => `
-            <tr class="hover:bg-slate-50">
-                <td class="p-2.5 font-bold font-mono text-ttbBlue">${m.emp_id}</td>
-                <td class="p-2.5">${m.position || '-'}</td>
-                <td class="p-2.5">${m.branch || '-'}</td>
-                <td class="p-2.5 text-center"><button onclick="removeMasterEmpID('${m.emp_id}')" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>
-            </tr>
-        `).join('');
+                const { data: salesData } = await supabase.from('sales_logs').select('*');
+                globalSales = salesData || [];
 
-    } catch(err) {
-        console.error("Render View Error:", err);
-    }
-}
+                renderAdminViews();
+                renderAdminDashboard();
+            } catch(e) {
+                console.error("Fetch Error:", e);
+            }
+        }
 
-async function approveUser(empId) {
-    const { error } = await supabase.from('users').update({ status: 'Active' }).eq('emp_id', empId);
-    if (!error) {
-        showToast(`อนุมัติพนักงาน ${empId} เรียบร้อยแล้ว`, "success");
-        fetchInitialData(); // โหลดใหม่
-    }
-}
+        function toggleAllMonths(checked) {
+            document.querySelectorAll('.month-checkbox').forEach(cb => cb.checked = checked);
+            renderAdminDashboard();
+        }
 
-async function addSingleMasterEmp() {
-    const empId = document.getElementById('add-m-id').value.trim();
-    if (!empId) return;
+        function resetDashboardFilters() {
+            document.getElementById('filter-dash-pos').value = 'ALL';
+            document.getElementById('filter-dash-zone').value = '';
+            document.getElementById('filter-dash-region').value = '';
+            document.getElementById('filter-dash-branch').value = '';
+            document.getElementById('filter-dash-product').value = 'ALL';
+            toggleAllMonths(true);
+        }
 
-    const { error } = await supabase.from('master_employees').insert([{ emp_id: empId }]);
-    if (!error) {
-        showToast(`เพิ่ม Master ID: ${empId} สำเร็จ`, "success");
-        fetchInitialData();
-    }
-}
+        // 📊 Render Dashboard
+        function renderAdminDashboard() {
+            try {
+                const selPos = document.getElementById('filter-dash-pos').value;
+                const selZone = document.getElementById('filter-dash-zone').value.trim();
+                const selRegion = document.getElementById('filter-dash-region').value.trim();
+                const selBranch = document.getElementById('filter-dash-branch').value.trim();
+                const selProduct = document.getElementById('filter-dash-product').value;
+                const selectedMonths = Array.from(document.querySelectorAll('.month-checkbox:checked')).map(cb => cb.value);
 
-async function removeMasterEmpID(id) {
-    const { error } = await supabase.from('master_employees').delete().eq('emp_id', id);
-    if (!error) {
-        showToast(`ลบ ${id} ออกจาก Master DB เรียบร้อย`, "info");
-        fetchInitialData();
-    }
-}
+                const enrichedLogs = globalSales.map(s => {
+                    const user = globalUsers.find(u => u.emp_id === s.emp_id) || {};
+                    return { ...s, user_info: user };
+                });
 
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    document.getElementById('toast-message').innerText = message;
-    toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-10');
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-10'); }, 3000);
-}
+                const filteredLogs = enrichedLogs.filter(log => {
+                    const u = log.user_info || {};
+                    if (selPos !== 'ALL' && u.position !== selPos) return false;
+                    if (selZone && (!u.zone || !u.zone.includes(selZone))) return false;
+                    if (selRegion && (!u.region || !u.region.includes(selRegion))) return false;
+                    if (selBranch && (!u.branch || !u.branch.includes(selBranch))) return false;
+                    if (selProduct !== 'ALL' && log.product_type !== selProduct) return false;
+                    if (selectedMonths.length > 0 && !selectedMonths.includes(log.target_month.toString())) return false;
+                    return true;
+                });
+
+                let totalAmount = 0, totalCases = 0, totalAgents = 0;
+                let cycSum = 0, cyhSum = 0, c2gSum = 0;
+                const activeUserIds = new Set();
+                const monthlyAmountArray = Array(12).fill(0);
+
+                filteredLogs.forEach(s => {
+                    totalAmount += (s.amount || 0);
+                    totalCases += (s.cases_count || 1);
+                    totalAgents += (s.agent_count || 0);
+                    if(s.emp_id) activeUserIds.add(s.emp_id);
+
+                    if (s.product_type === 'CYC') cycSum += (s.amount || 0);
+                    if (s.product_type === 'CYH') cyhSum += (s.amount || 0);
+                    if (s.product_type === 'C2G') c2gSum += (s.amount || 0);
+
+                    const mIdx = parseInt(s.target_month) - 1;
+                    if (mIdx >= 0 && mIdx < 12) monthlyAmountArray[mIdx] += (s.amount || 0);
+                });
+
+                document.getElementById('adash-total-amount').innerText = `${totalAmount.toLocaleString()} ฿`;
+                document.getElementById('adash-total-cases').innerText = `${totalCases} เคส`;
+                document.getElementById('adash-total-agents').innerText = `${totalAgents} ครั้ง`;
+                document.getElementById('adash-active-users-count').innerText = `${activeUserIds.size} คน`;
+                document.getElementById('adash-count-text').innerText = `${filteredLogs.length} รายการบันทึก`;
+
+                // Render Charts
+                const elBar = document.getElementById('chart-admin-monthly-bar');
+                if (elBar) {
+                    const ctxBar = elBar.getContext('2d');
+                    if (adminMonthlyBarChart) adminMonthlyBarChart.destroy();
+                    adminMonthlyBarChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                            datasets: [{ label: 'ยอดขายรวม (บาท)', data: monthlyAmountArray, backgroundColor: '#002D63', borderRadius: 6 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    });
+                }
+
+                const elPie = document.getElementById('chart-admin-product-pie');
+                if (elPie) {
+                    const ctxPie = elPie.getContext('2d');
+                    if (adminProductPieChart) adminProductPieChart.destroy();
+                    adminProductPieChart = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: {
+                            labels: ['CYC', 'CYH', 'C2G'],
+                            datasets: [{ data: [cycSum, cyhSum, c2gSum], backgroundColor: ['#002D63', '#F68B1F', '#10B981'] }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                const tableBody = document.getElementById('adash-table-body');
+                if (tableBody) {
+                    tableBody.innerHTML = filteredLogs.length === 0 ? 
+                        `<tr><td colspan="9" class="p-4 text-center text-gray-400">ไม่พบข้อมูลที่ตรงกับตัวกรอง</td></tr>` :
+                        filteredLogs.map(s => {
+                            const u = s.user_info || {};
+                            const unitName = s.product_type === 'CYC' ? 'คัน' : s.product_type === 'CYH' ? 'บ้าน' : 'เคส';
+                            return `
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-mono">${s.drawdown_date}</td>
+                                    <td class="p-3 font-bold text-ttbBlue">${s.emp_id}</td>
+                                    <td class="p-3 font-semibold">คุณ${u.first_name || ''} ${u.last_name || ''}</td>
+                                    <td class="p-3">${u.position || '-'} / ${u.branch || '-'}</td>
+                                    <td class="p-3">${u.zone || '-'} / ${u.region || '-'}</td>
+                                    <td class="p-3 font-bold">${s.product_type}</td>
+                                    <td class="p-3 text-center">${s.cases_count || 1} ${unitName}</td>
+                                    <td class="p-3 text-right font-bold">${(s.amount||0).toLocaleString()} ฿</td>
+                                    <td class="p-3 text-center">เดือน ${s.target_month}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                }
+            } catch(e) { console.error("Render Admin Dashboard error:", e); }
+        }
+
+        // Render Tables in Admin Views
+        function renderAdminViews() {
+            try {
+                const pendingUsers = globalUsers.filter(u => u.status === 'Pending' || u.status === 'Active');
+                document.getElementById('count-pending').innerText = globalUsers.filter(u => u.status === 'Pending').length;
+                
+                const tableApp = document.getElementById('table-approvals-body');
+                if (tableApp) {
+                    tableApp.innerHTML = pendingUsers.map(u => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-ttbBlue">${u.emp_id}</td>
+                            <td class="p-3 font-semibold">คุณ${u.first_name || '-'} ${u.last_name || ''}</td>
+                            <td class="p-3">${u.position || '-'}</td>
+                            <td class="p-3">${u.branch || '-'}</td>
+                            <td class="p-3">${u.zone || '-'}</td>
+                            <td class="p-3">${u.region || '-'}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${u.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${u.status}</span></td>
+                            <td class="p-3 text-center">${u.status === 'Pending' ? `<button onclick="approveUser('${u.emp_id}')" class="px-3 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-bold">อนุมัติ</button>` : `<span class="text-emerald-600 font-bold">อนุมัติแล้ว</span>`}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                const resetRequests = globalUsers.filter(u => u.status === 'ResetRequest' || u.temp_pin !== null);
+                document.getElementById('count-resets').innerText = globalUsers.filter(u => u.status === 'ResetRequest').length;
+                
+                const tableRes = document.getElementById('table-resets-body');
+                if (tableRes) {
+                    tableRes.innerHTML = resetRequests.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-gray-400">ไม่มีคำขอ Reset PIN</td></tr>` : resetRequests.map(u => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold">${u.emp_id}</td>
+                            <td class="p-3">คุณ${u.first_name || ''} ${u.last_name || ''}</td>
+                            <td class="p-3">${u.position || '-'}</td>
+                            <td class="p-3">${u.branch || '-'}</td>
+                            <td class="p-3 font-mono text-ttbBlue">${u.emp_id}@ttbbank.com</td>
+                            <td class="p-3">${u.temp_pin ? `<span class="font-mono bg-amber-100 px-2 rounded">${u.temp_pin}</span>` : `<span class="text-gray-400 italic">ยังไม่สร้าง</span>` }</td>
+                            <td class="p-3 text-center"><button onclick="generateAndSendTempPIN('${u.emp_id}')" class="px-3 py-1 bg-ttbBlue text-white rounded-lg text-[11px] font-bold">Gen PIN</button></td>
+                        </tr>
+                    `).join('');
+                }
+
+                const tableMas = document.getElementById('table-master-emp-body');
+                if (tableMas) {
+                    tableMas.innerHTML = globalMaster.map(m => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2.5 font-bold font-mono text-ttbBlue">${m.emp_id}</td>
+                            <td class="p-2.5">${m.position || '-'}</td>
+                            <td class="p-2.5">${m.branch || '-'}</td>
+                            <td class="p-2.5">${m.zone || '-'}</td>
+                            <td class="p-2.5">${m.region || '-'}</td>
+                            <td class="p-2.5 text-center"><button onclick="removeMasterEmpID('${m.emp_id}')" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>
+                        </tr>
+                    `).join('');
+                }
+
+                const tableSales = document.getElementById('table-sales-body');
+                if (tableSales) {
+                    tableSales.innerHTML = globalSales.map(s => {
+                        const u = globalUsers.find(usr => usr.emp_id === s.emp_id) || {};
+                        const unitName = s.product_type === 'CYC' ? 'คัน' : s.product_type === 'CYH' ? 'บ้าน' : 'เคส';
+                        return `
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-mono">${s.drawdown_date}</td>
+                                <td class="p-3 font-bold text-ttbBlue">${s.emp_id}</td>
+                                <td class="p-3">คุณ${u.first_name || '-'} ${u.last_name || ''}</td>
+                                <td class="p-3">${u.position || '-'}</td>
+                                <td class="p-3">${u.branch || '-'}</td>
+                                <td class="p-3 font-bold text-blue-600">${s.product_type}</td>
+                                <td class="p-3 text-center">${s.cases_count || 1} ${unitName}</td>
+                                <td class="p-3 text-right font-bold">${(s.amount||0).toLocaleString()} ฿</td>
+                                <td class="p-3 text-center">เดือน ${s.target_month}</td>
+                                <td class="p-3 text-center">${s.agent_count||0}</td>
+                                <td class="p-3 text-gray-500 italic truncate max-w-[150px]">${s.details || '-'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch(e) { console.error("Render Views error:", e); }
+        }
+
+        async function approveUser(empId) {
+            const { error } = await supabase.from('users').update({ status: 'Active' }).eq('emp_id', empId);
+            if (!error) {
+                showToast(`อนุมัติพนักงาน ${empId} เรียบร้อยแล้ว`, "success");
+                fetchInitialData();
+            }
+        }
+
+        async function generateAndSendTempPIN(empId) {
+            const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
+            const { error } = await supabase.from('users').update({ temp_pin: randomPIN }).eq('emp_id', empId);
+            if (!error) {
+                showToast(`สร้าง PIN ชั่วคราว: ${randomPIN} สำเร็จ`, "success");
+                fetchInitialData();
+            }
+        }
+
+        async function addSingleMasterEmp() {
+            const empId = document.getElementById('add-m-id').value.trim();
+            const pos = document.getElementById('add-m-pos').value.trim();
+            const branch = document.getElementById('add-m-branch').value.trim();
+            const zone = document.getElementById('add-m-zone').value.trim();
+            const region = document.getElementById('add-m-region').value.trim();
+            
+            if (!empId) { showToast("กรุณากรอกรหัสพนักงาน", "error"); return; }
+
+            const { error } = await supabase.from('master_employees').insert([{ emp_id: empId, position: pos, branch: branch, zone: zone, region: region }]);
+            if (error) {
+                showToast("มีรหัสนี้อยู่แล้ว หรือเกิดข้อผิดพลาด", "error");
+            } else {
+                document.getElementById('add-m-id').value = '';
+                showToast(`เพิ่ม Master ID: ${empId} สำเร็จ`, "success");
+                fetchInitialData();
+            }
+        }
+
+        async function removeMasterEmpID(id) {
+            const { error } = await supabase.from('master_employees').delete().eq('emp_id', id);
+            if (!error) {
+                showToast(`ลบ ${id} ออกจาก Master DB เรียบร้อย`, "info");
+                fetchInitialData();
+            }
+        }
+
+        function exportMasterEmployeesCSV() {
+            let csv = "Emp_ID,Position,Branch,Zone,Region\n";
+            globalMaster.forEach(m => {
+                csv += `${m.emp_id},${m.position || ''},${m.branch || ''},${m.zone || ''},${m.region || ''}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `master_employees_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+            showToast("Export ข้อมูลพนักงาน Master CSV เรียบร้อย", "success");
+        }
+
+        function importMasterEmployeesCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                let rowsToInsert = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const cols = line.split(',');
+                    const empId = cols[0] ? cols[0].trim() : '';
+                    if (empId) {
+                        rowsToInsert.push({
+                            emp_id: empId,
+                            position: cols[1] ? cols[1].trim() : '',
+                            branch: cols[2] ? cols[2].trim() : '',
+                            zone: cols[3] ? cols[3].trim() : '',
+                            region: cols[4] ? cols[4].trim() : ''
+                        });
+                    }
+                }
+
+                if(rowsToInsert.length > 0) {
+                    const { error } = await supabase.from('master_employees').upsert(rowsToInsert);
+                    if(!error) {
+                        showToast(`Import ข้อมูลพนักงานสำเร็จ!`, "success");
+                        fetchInitialData();
+                    }
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportSalesCSV() {
+            let csv = "Drawdown_Date,Emp_ID,First_Name,Last_Name,Position,Branch,Zone,Region,Product_Type,Cases_Count,Amount_THB,Target_Month,Agent_Count,Details\n";
+            globalSales.forEach(s => {
+                const u = globalUsers.find(usr => usr.emp_id === s.emp_id) || {};
+                csv += `${s.drawdown_date},${s.emp_id},${u.first_name||''},${u.last_name||''},${u.position||''},${u.branch||''},${u.zone||''},${u.region||''},${s.product_type},${s.cases_count||1},${s.amount||0},${s.target_month},${s.agent_count||0},"${s.details || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `sales_export_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+            showToast("ดาวน์โหลดไฟล์ CSV ยอดขายสำเร็จ", "success");
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-10');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-10'); }, 3000);
+        }
     </script>
 </body>
 </html>
