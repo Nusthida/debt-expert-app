@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Expert - ระบบผู้ดูแลระบบ (หลังบ้าน Admin)</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -50,10 +45,8 @@
 </head>
 <body class="text-gray-800 antialiased min-h-screen flex flex-col items-center p-0 md:p-6">
 
-    <!-- ADMIN CONTAINER -->
     <div class="w-full max-w-7xl bg-white min-h-[100vh] md:min-h-[88vh] rounded-none md:rounded-2xl shadow-xl overflow-hidden border border-gray-200 flex flex-col relative">
 
-        <!-- Admin Header Banner -->
         <div class="bg-gradient-to-r from-slate-900 via-ttbBlue to-slate-900 text-white p-5 flex flex-wrap justify-between items-center shadow-md border-b border-slate-700 z-10">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-ttbOrange text-white font-bold flex items-center justify-center text-xl shadow">
@@ -74,7 +67,6 @@
             </div>
         </div>
 
-        <!-- MAIN SEPARATE NAVIGATION MENUS -->
         <div class="bg-slate-100 border-b border-gray-200 px-4 md:px-6 flex space-x-1 md:space-x-2 text-[11px] md:text-xs font-bold pt-2 overflow-x-auto hide-scrollbar z-10">
             <button onclick="switchAdminMenu('employees')" id="menu-btn-employees" class="py-3 px-3 md:px-5 text-ttbBlue border-b-2 border-ttbBlue flex items-center space-x-1 md:space-x-2 bg-white rounded-t-xl shadow-sm whitespace-nowrap transition-all">
                 <i class="fa-solid fa-users-gear text-sm"></i><span>1. ข้อมูลจัดการพนักงาน</span>
@@ -87,20 +79,14 @@
             </button>
         </div>
 
-        <!-- GLOBAL LOADING OVERLAY -->
         <div id="admin-loader" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
             <div class="loader mb-3"></div>
             <p class="text-sm font-bold text-ttbBlue">กำลังเชื่อมต่อฐานข้อมูล Supabase...</p>
         </div>
 
-        <!-- ADMIN CONTENT BODY -->
         <div class="p-4 md:p-6 bg-slate-50 flex-1 overflow-y-auto relative" id="admin-body">
 
-            <!-- ========================================================================= -->
-            <!-- MENU 1: EMPLOYEE MANAGEMENT -->
-            <!-- ========================================================================= -->
             <div id="admin-menu-employees" class="space-y-4 md:space-y-5">
-                
                 <div class="flex flex-wrap justify-between items-center bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm gap-3">
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                         <button onclick="switchEmpSubTab('approvals')" id="subbtn-approvals" class="px-3 py-2 md:py-1.5 rounded-lg text-[11px] md:text-xs font-bold bg-ttbBlue text-white shadow-sm flex-1 sm:flex-none text-center transition-all">
@@ -115,7 +101,6 @@
                     </div>
                 </div>
 
-                <!-- SUB TAB 1: USER APPROVALS -->
                 <div id="emptab-approvals" class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                     <div class="p-3 md:p-4 border-b bg-slate-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <h3 class="font-bold text-xs text-gray-800"><i class="fa-solid fa-list-ul text-ttbOrange mr-1"></i> พนักงานในระบบ และคำขอรออนุมัติ (Pending)</h3>
@@ -142,7 +127,6 @@
                     </div>
                 </div>
 
-                <!-- SUB TAB 2: RESET PIN MANAGEMENT -->
                 <div id="emptab-resets" class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hidden">
                     <div class="p-3 md:p-4 border-b bg-slate-50">
                         <h3 class="font-bold text-xs text-gray-800"><i class="fa-solid fa-unlock-keyhole text-rose-500 mr-1"></i> คำขอลืมรหัสผ่าน / Reset PIN</h3>
@@ -165,7 +149,6 @@
                     </div>
                 </div>
 
-                <!-- SUB TAB 3: MASTER EMP ID LIST -->
                 <div id="emptab-master" class="bg-white rounded-xl border border-gray-200 p-4 md:p-5 shadow-sm space-y-4 hidden">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b pb-3 gap-3">
                         <div>
@@ -221,22 +204,15 @@
                         </table>
                     </div>
                 </div>
-
             </div>
 
-            <!-- ========================================================================= -->
-            <!-- MENU 2: EXECUTIVE DASHBOARD OVERVIEW WITH CHART.JS -->
-            <!-- ========================================================================= -->
             <div id="admin-menu-dashboard" class="space-y-4 md:space-y-5 hidden">
-                
-                <!-- FILTER CONTROL PANEL -->
                 <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-bold text-xs md:text-sm text-ttbBlue flex items-center"><i class="fa-solid fa-filter text-ttbOrange mr-2"></i> ตัวกรองข้อมูล (Dashboard Filter)</h3>
                         <button onclick="resetDashboardFilters()" class="text-[10px] md:text-xs text-rose-600 hover:underline font-semibold bg-rose-50 px-2 py-1 rounded border border-rose-100"><i class="fa-solid fa-rotate-left mr-1"></i> ล้างตัวกรอง</button>
                     </div>
 
-                    <!-- Dropdowns & Filters -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-[11px] md:text-xs">
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">ตำแหน่ง</label>
@@ -266,7 +242,6 @@
                         </div>
                     </div>
 
-                    <!-- Multiple Month Checkboxes -->
                     <div class="pt-3 border-t">
                         <div class="flex justify-between items-center mb-2">
                             <span class="block text-[11px] md:text-xs font-bold text-gray-800">เลือกเดือน (สามารถเลือกหลายเดือนเพื่อดูสะสมได้):</span>
@@ -289,7 +264,6 @@
                     </div>
                 </div>
 
-                <!-- FILTERED SUMMARY METRICS CARDS -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 text-xs">
                     <div class="bg-white p-3 md:p-4 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden flex flex-col justify-center">
                         <span class="text-gray-400 block mb-1 text-[10px] md:text-xs">ยอดขายรวมตามตัวกรอง (บาท)</span>
@@ -313,16 +287,13 @@
                     </div>
                 </div>
 
-                <!-- 2 ADMIN GRAPH CHARTS -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <!-- Bar Chart -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-2">
                         <h4 class="font-bold text-[11px] md:text-xs text-gray-800 flex items-center">
                             <i class="fa-solid fa-chart-column text-ttbBlue mr-2 text-base"></i> กราฟแท่งแสดงเทรนด์ยอดขายรายเดือน (บาท)
                         </h4>
                         <div class="relative w-full h-52 md:h-64"><canvas id="chart-admin-monthly-bar"></canvas></div>
                     </div>
-                    <!-- Pie Chart -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-2">
                         <h4 class="font-bold text-[11px] md:text-xs text-gray-800 flex items-center">
                             <i class="fa-solid fa-chart-pie text-ttbOrange mr-2 text-base"></i> กราฟแสดงสัดส่วนยอดขายตามผลิตภัณฑ์
@@ -331,7 +302,6 @@
                     </div>
                 </div>
 
-                <!-- FILTERED SALES LIST TABLE (Preview Mode) -->
                 <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm space-y-2 pb-2">
                     <div class="p-3 md:p-4 border-b bg-slate-50 flex justify-between items-center">
                         <h4 class="font-bold text-[11px] md:text-xs text-gray-800 flex items-center">
@@ -355,14 +325,9 @@
                         </table>
                     </div>
                 </div>
-
             </div>
 
-            <!-- ========================================================================= -->
-            <!-- MENU 3: SALES MANAGEMENT LOGS (FULL DATABASE) -->
-            <!-- ========================================================================= -->
             <div id="admin-menu-sales" class="space-y-4 md:space-y-5 hidden">
-                
                 <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3">
                     <div class="w-full sm:w-auto text-center sm:text-left">
                         <h3 class="font-bold text-xs md:text-sm text-gray-800"><i class="fa-solid fa-server text-ttbBlue mr-2"></i> ฐานข้อมูลยอดขายการรวบหนี้ทั้งหมด (Raw Data)</h3>
@@ -375,7 +340,6 @@
                 </div>
 
                 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative">
-                    <!-- Table Search -->
                     <div class="p-2 border-b bg-slate-50 flex justify-end">
                         <div class="relative w-full sm:w-64">
                             <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-xs"></i>
@@ -403,28 +367,21 @@
                         </table>
                     </div>
                 </div>
-
             </div>
 
         </div>
-
     </div>
 
-    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl z-[9999] text-xs flex items-center justify-between space-x-3 transition-all duration-300 opacity-0 pointer-events-none -translate-y-10 border border-slate-700 min-w-[280px]">
         <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
         <span id="toast-message" class="font-medium text-[11px] md:text-xs">แจ้งเตือน</span>
     </div>
 
     <script>
-        // ---------------------------------------------------------
-        // 1. SUPABASE CONFIGURATION (Direct string to prevent parsing errors)
-        // ---------------------------------------------------------
         const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
         const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
         const supabaseClient = window.supabase.createClient(dbHost, publicToken);
 
-        // Global Variables for Admin
         let toastTimeout;
         let adminMonthlyBarChart = null;
         let adminProductPieChart = null;
@@ -437,9 +394,6 @@
             fetchInitialData();
         });
 
-        // ---------------------------------------------------------
-        // 2. DATA FETCHING (ROBUST ASYNC AWAIT)
-        // ---------------------------------------------------------
         async function fetchInitialData(isRefresh = false) {
             const loader = document.getElementById('admin-loader');
             const connStatus = document.getElementById('conn-status');
@@ -451,7 +405,6 @@
             }
 
             try {
-                // Fetch in parallel for speed
                 const [resUsers, resMaster, resSales] = await Promise.all([
                     supabaseClient.from('users').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('master_employees').select('*'),
@@ -473,7 +426,6 @@
 
                 if (isRefresh) showToast("ซิงค์ข้อมูลล่าสุดสำเร็จ", "success");
 
-                // Update UI
                 renderAdminViews();
                 renderAdminDashboard();
 
@@ -483,15 +435,12 @@
                     connStatus.className = "inline-block bg-rose-500/20 text-rose-500 border border-rose-500/40 px-3 py-1.5 rounded-full font-medium";
                     connStatus.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Connection Error`;
                 }
-                showToast("ไม่สามารถเชื่อมต่อฐานข้อมูลได้ โปรดตรวจสอบอินเทอร์เน็ตหรือ API Key", "error");
+                showToast("ไม่สามารถเชื่อมต่อฐานข้อมูลได้ โปรดตรวจสอบอินเทอร์เน็ต", "error");
             } finally {
                 if (loader) loader.classList.add('hidden');
             }
         }
 
-        // ---------------------------------------------------------
-        // 3. UI & TAB NAVIGATION
-        // ---------------------------------------------------------
         function switchAdminMenu(menuName) {
             ['employees', 'dashboard', 'sales'].forEach(m => {
                 const menuEl = document.getElementById(`admin-menu-${m}`);
@@ -505,7 +454,6 @@
             if (targetMenu) targetMenu.classList.remove('hidden');
             if (targetBtn) targetBtn.className = "py-3 px-3 md:px-5 text-ttbBlue border-b-2 border-ttbBlue flex items-center space-x-1 md:space-x-2 bg-white rounded-t-xl shadow-sm font-bold whitespace-nowrap transition-all";
             
-            // Re-render specifically for canvas resize fixes
             if (menuName === 'dashboard') {
                 renderAdminDashboard();
             }
@@ -524,23 +472,17 @@
             if (activeTab) activeTab.classList.remove('hidden');
             if (activeBtn) activeBtn.className = "px-3 py-2 md:py-1.5 rounded-lg text-[11px] md:text-xs font-bold bg-ttbBlue text-white shadow-sm flex-1 sm:flex-none text-center transition-all";
             
-            // Adjust master tab button style which is full width on mobile
             if(tabName === 'master') {
                 activeBtn.className = "px-3 py-2 md:py-1.5 rounded-lg text-[11px] md:text-xs font-bold bg-ttbBlue text-white shadow-sm w-full sm:w-auto text-center mt-1 sm:mt-0 transition-all";
             }
         }
 
-        // ---------------------------------------------------------
-        // 4. RENDER ADMIN VIEWS (TABLES)
-        // ---------------------------------------------------------
         function renderAdminViews() {
             try {
-                // Search Values
                 const searchApp = (document.getElementById('search-approvals') ? document.getElementById('search-approvals').value.toLowerCase() : "");
                 const searchMas = (document.getElementById('search-master') ? document.getElementById('search-master').value.toLowerCase() : "");
                 const searchSal = (document.getElementById('search-sales') ? document.getElementById('search-sales').value.toLowerCase() : "");
 
-                // --- 4.1 Approvals Table ---
                 let pendingUsers = globalUsers.filter(u => u.status === 'Pending' || u.status === 'Active');
                 if (searchApp) {
                     pendingUsers = pendingUsers.filter(u => 
@@ -569,7 +511,6 @@
                     `).join('');
                 }
 
-                // --- 4.2 Resets Table ---
                 const resetRequests = globalUsers.filter(u => u.status === 'ResetRequest' || u.temp_pin !== null);
                 const cResets = document.getElementById('count-resets');
                 if(cResets) cResets.innerText = globalUsers.filter(u => u.status === 'ResetRequest').length;
@@ -590,7 +531,6 @@
                     `).join('');
                 }
 
-                // --- 4.3 Master Table ---
                 let mList = [...globalMaster];
                 if (searchMas) {
                     mList = mList.filter(m => m.emp_id && m.emp_id.toLowerCase().includes(searchMas));
@@ -612,7 +552,6 @@
                     `).join('');
                 }
 
-                // --- 4.4 All Sales Table (No Filter) ---
                 let sList = [...globalSales];
                 if (searchSal) {
                     sList = sList.filter(s => s.emp_id && s.emp_id.toLowerCase().includes(searchSal));
@@ -645,9 +584,6 @@
             } catch(e) { console.error("Render Views error:", e); }
         }
 
-        // ---------------------------------------------------------
-        // 5. DASHBOARD RENDER & CHARTS
-        // ---------------------------------------------------------
         function toggleAllMonths(checked) {
             document.querySelectorAll('.month-checkbox').forEach(cb => cb.checked = checked);
             renderAdminDashboard();
@@ -664,7 +600,6 @@
 
         function renderAdminDashboard() {
             try {
-                // Get Filter Values
                 const selPos = document.getElementById('filter-dash-pos') ? document.getElementById('filter-dash-pos').value : 'ALL';
                 const selZone = document.getElementById('filter-dash-zone') ? document.getElementById('filter-dash-zone').value.trim() : '';
                 const selRegion = document.getElementById('filter-dash-region') ? document.getElementById('filter-dash-region').value.trim() : '';
@@ -674,13 +609,11 @@
                 const monthChecks = document.querySelectorAll('.month-checkbox:checked');
                 const selectedMonths = Array.from(monthChecks).map(cb => cb.value);
 
-                // Join Sales with User Info
                 const enrichedLogs = globalSales.map(s => {
                     const user = globalUsers.find(u => u.emp_id === s.emp_id) || {};
                     return { ...s, user_info: user };
                 });
 
-                // Apply Filters
                 const filteredLogs = enrichedLogs.filter(log => {
                     const u = log.user_info || {};
                     if (selPos !== 'ALL' && u.position !== selPos) return false;
@@ -692,7 +625,6 @@
                     return true;
                 });
 
-                // Calculate Metrics
                 let totalAmount = 0, totalCases = 0, totalAgents = 0;
                 let cycSum = 0, cyhSum = 0, c2gSum = 0;
                 const activeUserIds = new Set();
@@ -712,7 +644,6 @@
                     if (mIdx >= 0 && mIdx < 12) monthlyAmountArray[mIdx] += (s.amount || 0);
                 });
 
-                // Update UI KPI Cards
                 const elTotalAmt = document.getElementById('adash-total-amount');
                 if(elTotalAmt) elTotalAmt.innerText = `${totalAmount.toLocaleString()} ฿`;
                 
@@ -728,7 +659,6 @@
                 const elCountText = document.getElementById('adash-count-text');
                 if(elCountText) elCountText.innerText = `${filteredLogs.length} รายการบันทึก`;
 
-                // Render Bar Chart
                 const elBar = document.getElementById('chart-admin-monthly-bar');
                 if (elBar) {
                     const ctxBar = elBar.getContext('2d');
@@ -751,7 +681,6 @@
                     });
                 }
 
-                // Render Pie Chart
                 const elPie = document.getElementById('chart-admin-product-pie');
                 if (elPie) {
                     const ctxPie = elPie.getContext('2d');
@@ -774,10 +703,8 @@
                     });
                 }
 
-                // Render Filtered Table Preview
                 const tableBody = document.getElementById('adash-table-body');
                 if (tableBody) {
-                    // Show only top 5 in preview to save space
                     const previewLogs = filteredLogs.slice(0, 10);
                     
                     tableBody.innerHTML = previewLogs.length === 0 ? 
@@ -803,9 +730,6 @@
             } catch(e) { console.error("Render Admin Dashboard error:", e); }
         }
 
-        // ---------------------------------------------------------
-        // 6. ADMIN ACTIONS
-        // ---------------------------------------------------------
         async function approveUser(empId) {
             try {
                 const { error } = await supabaseClient.from('users').update({ status: 'Active' }).eq('emp_id', empId);
@@ -875,9 +799,9 @@
         }
 
         function exportMasterEmployeesCSV() {
-            let csv = "Emp_ID,Position,Branch,Zone,Region\n";
+            let csv = "Emp_ID,Position,Branch,Zone,Region\\n";
             globalMaster.forEach(m => {
-                csv += `${m.emp_id},${m.position || ''},${m.branch || ''},${m.zone || ''},${m.region || ''}\n`;
+                csv += `${m.emp_id},${m.position || ''},${m.branch || ''},${m.zone || ''},${m.region || ''}\\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -897,7 +821,7 @@
             reader.onload = async function(e) {
                 try {
                     const text = e.target.result;
-                    const lines = text.split('\n');
+                    const lines = text.split('\\n');
                     let rowsToInsert = [];
 
                     for (let i = 1; i < lines.length; i++) {
@@ -933,10 +857,10 @@
         }
 
         function exportSalesCSV() {
-            let csv = "Drawdown_Date,Emp_ID,First_Name,Last_Name,Position,Branch,Zone,Region,Product_Type,Cases_Count,Amount_THB,Target_Month,Agent_Count,Details\n";
+            let csv = "Drawdown_Date,Emp_ID,First_Name,Last_Name,Position,Branch,Zone,Region,Product_Type,Cases_Count,Amount_THB,Target_Month,Agent_Count,Details\\n";
             globalSales.forEach(s => {
                 const u = globalUsers.find(usr => usr.emp_id === s.emp_id) || {};
-                csv += `${s.drawdown_date},${s.emp_id},${u.first_name||''},${u.last_name||''},${u.position||''},${u.branch||''},${u.zone||''},${u.region||''},${s.product_type},${s.cases_count||1},${s.amount||0},${s.target_month},${s.agent_count||0},"${s.details || ''}"\n`;
+                csv += `${s.drawdown_date},${s.emp_id},${u.first_name||''},${u.last_name||''},${u.position||''},${u.branch||''},${u.zone||''},${u.region||''},${s.product_type},${s.cases_count||1},${s.amount||0},${s.target_month},${s.agent_count||0},"${s.details || ''}"\\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -948,12 +872,11 @@
             showToast("ดาวน์โหลดไฟล์ CSV ยอดขายสำเร็จ", "success");
         }
 
-        // ---------------------------------------------------------
-        // 7. UTILS
-        // ---------------------------------------------------------
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastIcon = document.getElementById('toast-icon');
+            if(!toast || !toastIcon) return;
+            
             document.getElementById('toast-message').innerText = message;
 
             if (type === 'success') toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg md:text-xl";
