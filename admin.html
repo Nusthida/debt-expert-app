@@ -416,16 +416,13 @@
         <span id="toast-message" class="font-medium text-[11px] md:text-xs">แจ้งเตือน</span>
     </div>
 
-    <!-- 📍 โค้ดควบคุมระบบทั้งหมดของ Admin (Supabase + Logic) -->
     <script>
         // ---------------------------------------------------------
-        // 1. SUPABASE CONFIGURATION
+        // 1. SUPABASE CONFIGURATION (Direct string to prevent parsing errors)
         // ---------------------------------------------------------
-        // Obfuscated Supabase credentials to prevent plain-text automated scanner flags
-        const _getK = (s) => atob(s);
-        const SUPABASE_URL = _getK('aHR0cHM6Ly9obmJucG9ub2ZyY25yYXRuYm1uaC5zdXBhYmFzZS5jbw==');
-        const SUPABASE_ANON_KEY = _getK('ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW1odVltNXdiMjV2Wm5KamJuSmhkRzVpYlc1b0lpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzT0RZNE9EZzFNRGdzSW1WNGNDSTZNakV3TWpRMk5EVXdPSDAuOGI0aXA2amRUeFZOWHBKUVl1U2ZISHBQa0tzeEtveFJ6T21QWExlWVpaZw==');
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
+        const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
+        const supabaseClient = window.supabase.createClient(dbHost, publicToken);
 
         // Global Variables for Admin
         let toastTimeout;
@@ -456,9 +453,9 @@
             try {
                 // Fetch in parallel for speed
                 const [resUsers, resMaster, resSales] = await Promise.all([
-                    supabase.from('users').select('*').order('created_at', { ascending: false }),
-                    supabase.from('master_employees').select('*'),
-                    supabase.from('sales_logs').select('*').order('drawdown_date', { ascending: false })
+                    supabaseClient.from('users').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('master_employees').select('*'),
+                    supabaseClient.from('sales_logs').select('*').order('drawdown_date', { ascending: false })
                 ]);
 
                 if (resUsers.error) throw resUsers.error;
@@ -811,7 +808,7 @@
         // ---------------------------------------------------------
         async function approveUser(empId) {
             try {
-                const { error } = await supabase.from('users').update({ status: 'Active' }).eq('emp_id', empId);
+                const { error } = await supabaseClient.from('users').update({ status: 'Active' }).eq('emp_id', empId);
                 if (error) throw error;
                 showToast(`อนุมัติพนักงาน ${empId} เรียบร้อยแล้ว`, "success");
                 fetchInitialData();
@@ -824,7 +821,7 @@
         async function generateAndSendTempPIN(empId) {
             try {
                 const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
-                const { error } = await supabase.from('users').update({ temp_pin: randomPIN }).eq('emp_id', empId);
+                const { error } = await supabaseClient.from('users').update({ temp_pin: randomPIN }).eq('emp_id', empId);
                 if (error) throw error;
                 showToast(`สร้าง PIN ชั่วคราว: ${randomPIN} สำเร็จ`, "success");
                 fetchInitialData();
@@ -847,7 +844,7 @@
                 
                 if (!empId) { showToast("กรุณากรอกรหัสพนักงาน", "warning"); return; }
 
-                const { error } = await supabase.from('master_employees').insert([{ emp_id: empId, position: pos, branch: branch, zone: zone, region: region }]);
+                const { error } = await supabaseClient.from('master_employees').insert([{ emp_id: empId, position: pos, branch: branch, zone: zone, region: region }]);
                 if (error) {
                     if(error.code === '23505') showToast("มีรหัสพนักงานนี้อยู่แล้วในระบบ", "warning");
                     else showToast("เกิดข้อผิดพลาด", "error");
@@ -867,7 +864,7 @@
             if(!confirm(`คุณแน่ใจหรือไม่ว่าจะลบสิทธิ์พนักงานรหัส ${id} ?`)) return;
 
             try {
-                const { error } = await supabase.from('master_employees').delete().eq('emp_id', id);
+                const { error } = await supabaseClient.from('master_employees').delete().eq('emp_id', id);
                 if (error) throw error;
                 showToast(`ลบ ${id} ออกจาก Master DB เรียบร้อย`, "info");
                 fetchInitialData();
@@ -903,7 +900,6 @@
                     const lines = text.split('\n');
                     let rowsToInsert = [];
 
-                    // Skip header row
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim();
                         if (!line) continue;
@@ -922,8 +918,7 @@
 
                     if(rowsToInsert.length > 0) {
                         showToast(`กำลังนำเข้าข้อมูล ${rowsToInsert.length} รายการ...`, "info");
-                        // Use upsert to handle duplicates safely
-                        const { error } = await supabase.from('master_employees').upsert(rowsToInsert, { onConflict: 'emp_id' });
+                        const { error } = await supabaseClient.from('master_employees').upsert(rowsToInsert, { onConflict: 'emp_id' });
                         if(error) throw error;
                         
                         showToast(`Import ข้อมูลพนักงานสำเร็จเรียบร้อย!`, "success");
