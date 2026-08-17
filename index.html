@@ -449,6 +449,9 @@
         const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
         const supabaseClient = window.supabase.createClient(dbHost, publicToken);
 
+        // 📍 เพิ่มตัวแปรเก็บรูปรอ (Default Avatar) เผื่อกรณีคนที่ล็อกอินไม่มีรูป
+        const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
+
         let currentUser = null;
         let toastTimeout;
         let personalDoughnutChart = null;
@@ -459,7 +462,6 @@
             if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
         });
 
-        
         function setupSession() {
             // UI Toggle
             const authEl = document.getElementById('auth-screen');
@@ -472,7 +474,6 @@
             if(navEl) navEl.classList.remove('hidden');
             if(badgeEl) badgeEl.classList.remove('hidden');
 
-            // Safe Assignment Helpers
             const safeSetText = (id, text) => {
                 const el = document.getElementById(id);
                 if (el) el.innerText = text;
@@ -499,16 +500,43 @@
             safeSetText('profile-branch', branch);
             safeSetText('profile-zone-region', `${zone} / ${region}`);
             
-            if(currentUser && currentUser.img_url) {
-                const profAvatar = document.getElementById('profile-avatar');
-                const homeAvatar = document.getElementById('home-user-avatar');
-                if (profAvatar) profAvatar.src = currentUser.img_url;
-                if (homeAvatar) homeAvatar.src = currentUser.img_url;
-            }
+            // 📍 เลือกว่าจะใช้รูปตัวเอง หรือรูปรอ(Default)
+            const avatarUrl = (currentUser && currentUser.img_url) ? currentUser.img_url : DEFAULT_AVATAR;
+            
+            // สั่งเปลี่ยนรูปทั้งหน้า Home และหน้า Profile ทันที
+            const profAvatar = document.getElementById('profile-avatar');
+            const homeAvatar = document.getElementById('home-user-avatar');
+            if (profAvatar) profAvatar.src = avatarUrl;
+            if (homeAvatar) homeAvatar.src = avatarUrl;
 
             switchEmpTab('home');
         }
 
+        function handleLogout() {
+            currentUser = null;
+            const authEl = document.getElementById('auth-screen');
+            const mainEl = document.getElementById('main-app-screen');
+            const navEl = document.getElementById('emp-bottom-nav');
+            const badgeEl = document.getElementById('user-header-badge');
+            
+            if(authEl) authEl.classList.remove('hidden');
+            if(mainEl) mainEl.classList.add('hidden');
+            if(navEl) navEl.classList.add('hidden');
+            if(badgeEl) badgeEl.classList.add('hidden');
+            
+            const lEmp = document.getElementById('login-emp-id');
+            const lPin = document.getElementById('login-pin');
+            if(lEmp) lEmp.value = '';
+            if(lPin) lPin.value = '';
+            
+            // 📍 สั่งล้างรูปภาพหน้าจอให้กลับเป็น Default ตอนกดปุ่มออกจากระบบ
+            const profAvatar = document.getElementById('profile-avatar');
+            const homeAvatar = document.getElementById('home-user-avatar');
+            if (profAvatar) profAvatar.src = DEFAULT_AVATAR;
+            if (homeAvatar) homeAvatar.src = DEFAULT_AVATAR;
+
+            showAuthSubForm('login');
+        }
 
         function switchEmpTab(tabName) {
             ['home', 'key-sales', 'dashboard', 'profile'].forEach(t => {
@@ -718,26 +746,6 @@
                 setupSession();
                 showToast("ตั้งรหัส PIN ใหม่สำเร็จแล้ว!", "success");
             } catch(e) { console.error(e); }
-        }
-
-        function handleLogout() {
-            currentUser = null;
-            const authEl = document.getElementById('auth-screen');
-            const mainEl = document.getElementById('main-app-screen');
-            const navEl = document.getElementById('emp-bottom-nav');
-            const badgeEl = document.getElementById('user-header-badge');
-            
-            if(authEl) authEl.classList.remove('hidden');
-            if(mainEl) mainEl.classList.add('hidden');
-            if(navEl) navEl.classList.add('hidden');
-            if(badgeEl) badgeEl.classList.add('hidden');
-            
-            const lEmp = document.getElementById('login-emp-id');
-            const lPin = document.getElementById('login-pin');
-            if(lEmp) lEmp.value = '';
-            if(lPin) lPin.value = '';
-            
-            showAuthSubForm('login');
         }
 
         async function handleSaveSalesEntry() {
