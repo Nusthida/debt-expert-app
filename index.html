@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Expert - ระบบพนักงาน (Staff use)</title>
+    <title>Debt Expert - ระบบพนักงาน (หน้าบ้าน)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -30,13 +31,6 @@
     <style>
         body { font-family: 'Prompt', sans-serif; background-color: #EBF1F5; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-        }
-        .animate-shake { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
 <body class="text-gray-800 antialiased min-h-screen flex flex-col items-center justify-center p-0 md:p-4">
@@ -47,12 +41,12 @@
             <div class="flex items-center space-x-3">
                 <div class="w-9 h-9 rounded-xl bg-white text-ttbBlue font-bold flex items-center justify-center text-lg shadow">DE</div>
                 <div>
-                    <h1 class="font-bold text-base leading-tight">Debt Expert (Staff)</h1>
+                    <h1 class="font-bold text-base leading-tight">Debt Expert (หน้าบ้าน)</h1>
                     <p class="text-[11px] text-blue-200">ระบบพนักงานคีย์ยอดขายรวบหนี้</p>
                 </div>
             </div>
             <div id="user-header-badge" class="hidden text-right">
-                <span id="current-user-name" class="block font-medium text-xs text-white">คุณธนาคาร</span>
+                <span id="current-user-name" class="block font-medium text-xs text-white">คุณสมชาย</span>
                 <span id="current-user-role" class="inline-block text-[10px] bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded-full border border-emerald-400/40">Active</span>
             </div>
         </div>
@@ -73,7 +67,7 @@
                     <div class="space-y-3 pt-2">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">รหัสพนักงาน</label>
-                            <input type="text" id="login-emp-id" onkeypress="if(event.key === 'Enter') handleLogin()" placeholder="เช่น 40001" class="w-full px-3 py-2.5 text-sm border rounded-xl focus:ring-2 focus:ring-ttbBlue/30 focus:border-ttbBlue outline-none">
+                            <input type="text" id="login-emp-id" onkeypress="if(event.key === 'Enter') handleLogin()" placeholder="เช่น 10001" class="w-full px-3 py-2.5 text-sm border rounded-xl focus:ring-2 focus:ring-ttbBlue/30 focus:border-ttbBlue outline-none">
                         </div>
 
                         <div>
@@ -104,8 +98,8 @@
 
                     <div class="space-y-3 text-xs">
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">รหัสพนักงาน *</label>
-                            <input type="text" id="reg-emp-id" placeholder="กรอกรหัสพนักงาน เช่น 40004" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                            <label class="block font-semibold text-gray-700 mb-1">รหัสพนักงาน * (พิมพ์แล้วคลิกที่ว่างเพื่อ ดึงข้อมูลอัตโนมัติ)</label>
+                            <input type="text" id="reg-emp-id" onblur="autofillMasterData()" placeholder="กรอกรหัสพนักงาน เช่น 10004" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue font-mono font-bold text-ttbBlue">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
@@ -122,30 +116,22 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1">ตำแหน่ง</label>
-                                <select id="reg-position" class="w-full px-2 py-2 border rounded-xl outline-none focus:border-ttbBlue bg-white">
-                                    <option value="BM">BM</option>
-                                    <option value="ABM">ABM</option>
-                                    <option value="CFSA">CFSA</option>
-                                    <option value="CLSA">CLSA</option>
-                                    <option value="CIFA">CIFA</option>
-                                    <option value="CLSM">CLSM</option>
-                                    <option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
-                                </select>
+                                <input type="text" id="reg-position" placeholder="เช่น BM" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue bg-gray-50">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1">ชื่อสาขา (ถ้ามี)</label>
-                                <input type="text" id="reg-branch" placeholder="เช่น สาขาสนามเป้า" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                                <input type="text" id="reg-branch" placeholder="เช่น สาขาซีคอน" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue bg-gray-50">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1">เขต</label>
-                                <input type="text" id="reg-zone" placeholder="เช่น จตุจักร" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                                <input type="text" id="reg-zone" placeholder="เช่น เขต 1" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue bg-gray-50">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1">ภาค</label>
-                                <input type="text" id="reg-region" placeholder="เช่น RH 1" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                                <input type="text" id="reg-region" placeholder="เช่น ภาค 1" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue bg-gray-50">
                             </div>
                         </div>
 
@@ -167,7 +153,7 @@
                     </div>
 
                     <div class="space-y-3 text-xs">
-                        <p class="text-gray-600">กรอกรหัสพนักงาน เพื่อให้ Admin สร้าง PIN ชั่วคราว (One-Time PIN) ส่งเข้าอีเมลบริษัทของคุณ</p>
+                        <p class="text-gray-600">กรอกรหัสพนักงาน เพื่อให้ Admin สร้าง PIN ชั่วคราวส่งเข้าอีเมลบริษัทของคุณ</p>
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">รหัสพนักงาน *</label>
                             <input type="text" id="reset-emp-id" placeholder="กรอกรหัสพนักงาน" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
@@ -217,17 +203,17 @@
                         </div>
                         <div class="grid grid-cols-3 gap-2 text-center">
                             <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-100">
-                                <span class="text-[10px] text-blue-700 font-semibold block">CYC (รถ)Code0009</span>
+                                <span class="text-[10px] text-blue-700 font-semibold block">CYC (รถ)</span>
                                 <span id="stat-cyc-cases" class="text-[10px] text-gray-500 block">0 คัน</span>
                                 <span id="stat-cyc" class="font-bold text-sm text-ttbBlue">0 ฿</span>
                             </div>
                             <div class="bg-orange-50 p-2.5 rounded-xl border border-orange-100">
-                                <span class="text-[10px] text-orange-700 font-semibold block">CYH (บ้าน)CodeHE01,HE04</span>
+                                <span class="text-[10px] text-orange-700 font-semibold block">CYH (บ้าน)</span>
                                 <span id="stat-cyh-cases" class="text-[10px] text-gray-500 block">0 บ้าน</span>
                                 <span id="stat-cyh" class="font-bold text-sm text-ttbOrange">0 ฿</span>
                             </div>
                             <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
-                                <span class="text-[10px] text-emerald-700 font-semibold block">C2G CodeDU00</span>
+                                <span class="text-[10px] text-emerald-700 font-semibold block">C2G</span>
                                 <span id="stat-c2g-cases" class="text-[10px] text-gray-500 block">0 เคส</span>
                                 <span id="stat-c2g" class="font-bold text-sm text-emerald-600">0 ฿</span>
                             </div>
@@ -295,9 +281,15 @@
                                 </select>
                             </div>
 
-                            <div>
-                                <label class="block font-semibold text-gray-700 mb-1">จำนวนครั้งที่ใช้ Agent *</label>
-                                <input type="number" id="sale-agent-count" min="0" value="0" placeholder="0" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-semibold text-gray-700 mb-1">จำนวนครั้งที่ใช้ Agent *</label>
+                                    <input type="number" id="sale-agent-count" min="0" value="0" placeholder="0" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-700 mb-1">จำนวนที่ให้คำปรึกษา (ราย) *</label>
+                                    <input type="number" id="sale-consult-count" min="0" value="0" placeholder="0" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-ttbBlue">
+                                </div>
                             </div>
 
                             <div>
@@ -375,8 +367,7 @@
                             <span><i class="fa-solid fa-clock-rotate-left text-gray-400 mr-2"></i> ประวัติรายการคีย์ของฉัน</span>
                             <button onclick="updatePersonalDashboard()" class="text-ttbBlue bg-blue-50 px-2 py-1 rounded hover:bg-blue-100"><i class="fa-solid fa-rotate"></i> โหลดข้อมูลใหม่</button>
                         </h4>
-                        <div id="pdash-history-list" class="space-y-2 text-xs">
-                        </div>
+                        <div id="pdash-history-list" class="space-y-2 text-xs"></div>
                     </div>
                 </div>
 
@@ -427,7 +418,7 @@
 
     <div id="modal-temp-pin" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-gray-100">
-            <h3 class="font-bold text-sm text-ttbBlue flex items-center"><i class="fa-solid fa-key text-ttbOrange mr-2"></i> ตั้งรหัส PIN ใหม่ (One-Time PIN Verified)</h3>
+            <h3 class="font-bold text-sm text-ttbBlue flex items-center"><i class="fa-solid fa-key text-ttbOrange mr-2"></i> ตั้งรหัส PIN ใหม่</h3>
             <p class="text-xs text-gray-600">คุณเข้าสู่ระบบด้วย PIN ชั่วคราวสำเร็จ กรุณาตั้งรหัส PIN ใหม่ 6 หลักของคุณ</p>
             <input type="password" id="modal-new-pin-1" maxlength="6" placeholder="PIN ใหม่ 6 หลัก" class="w-full px-3 py-2 border rounded-xl text-xs tracking-widest outline-none focus:border-ttbBlue">
             <input type="password" id="modal-new-pin-2" maxlength="6" placeholder="ยืนยัน PIN ใหม่ 6 หลัก" class="w-full px-3 py-2 border rounded-xl text-xs tracking-widest outline-none focus:border-ttbBlue">
@@ -447,7 +438,13 @@
     <script>
         const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
         const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
-        const supabaseClient = window.supabase.createClient(dbHost, publicToken);
+        
+        let supabaseClient = null;
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(dbHost, publicToken);
+        }
+
+        const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
 
         let currentUser = null;
         let toastTimeout;
@@ -459,9 +456,23 @@
             if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
         });
 
-        
+        async function autofillMasterData() {
+            if (!supabaseClient) return;
+            const empId = document.getElementById('reg-emp-id').value.trim();
+            if(!empId) return;
+            try {
+                const { data, error } = await supabaseClient.from('master_employees').select('*').eq('emp_id', empId).maybeSingle();
+                if(data) {
+                    if(data.position) document.getElementById('reg-position').value = data.position;
+                    if(data.branch) document.getElementById('reg-branch').value = data.branch;
+                    if(data.zone) document.getElementById('reg-zone').value = data.zone;
+                    if(data.region) document.getElementById('reg-region').value = data.region;
+                    showToast("ดึงข้อมูลพนักงานจาก Master DB เรียบร้อยแล้ว", "info");
+                }
+            } catch(e) { console.error(e); }
+        }
+
         function setupSession() {
-            // UI Toggle
             const authEl = document.getElementById('auth-screen');
             const mainEl = document.getElementById('main-app-screen');
             const navEl = document.getElementById('emp-bottom-nav');
@@ -472,7 +483,6 @@
             if(navEl) navEl.classList.remove('hidden');
             if(badgeEl) badgeEl.classList.remove('hidden');
 
-            // Safe Assignment Helpers
             const safeSetText = (id, text) => {
                 const el = document.getElementById(id);
                 if (el) el.innerText = text;
@@ -499,16 +509,40 @@
             safeSetText('profile-branch', branch);
             safeSetText('profile-zone-region', `${zone} / ${region}`);
             
-            if(currentUser && currentUser.img_url) {
-                const profAvatar = document.getElementById('profile-avatar');
-                const homeAvatar = document.getElementById('home-user-avatar');
-                if (profAvatar) profAvatar.src = currentUser.img_url;
-                if (homeAvatar) homeAvatar.src = currentUser.img_url;
-            }
+            const avatarUrl = (currentUser && currentUser.img_url) ? currentUser.img_url : DEFAULT_AVATAR;
+            
+            const profAvatar = document.getElementById('profile-avatar');
+            const homeAvatar = document.getElementById('home-user-avatar');
+            if (profAvatar) profAvatar.src = avatarUrl;
+            if (homeAvatar) homeAvatar.src = avatarUrl;
 
             switchEmpTab('home');
         }
 
+        function handleLogout() {
+            currentUser = null;
+            const authEl = document.getElementById('auth-screen');
+            const mainEl = document.getElementById('main-app-screen');
+            const navEl = document.getElementById('emp-bottom-nav');
+            const badgeEl = document.getElementById('user-header-badge');
+            
+            if(authEl) authEl.classList.remove('hidden');
+            if(mainEl) mainEl.classList.add('hidden');
+            if(navEl) navEl.classList.add('hidden');
+            if(badgeEl) badgeEl.classList.add('hidden');
+            
+            const lEmp = document.getElementById('login-emp-id');
+            const lPin = document.getElementById('login-pin');
+            if(lEmp) lEmp.value = '';
+            if(lPin) lPin.value = '';
+            
+            const profAvatar = document.getElementById('profile-avatar');
+            const homeAvatar = document.getElementById('home-user-avatar');
+            if (profAvatar) profAvatar.src = DEFAULT_AVATAR;
+            if (homeAvatar) homeAvatar.src = DEFAULT_AVATAR;
+
+            showAuthSubForm('login');
+        }
 
         function switchEmpTab(tabName) {
             ['home', 'key-sales', 'dashboard', 'profile'].forEach(t => {
@@ -552,6 +586,9 @@
         }
 
         async function handleLogin() {
+            if (!supabaseClient) {
+                showToast("ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "error"); return;
+            }
             const btn = document.getElementById('btn-login');
             if(btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...`;
@@ -612,6 +649,7 @@
         }
 
         async function handleRegisterSubmit() {
+            if (!supabaseClient) return;
             const btn = document.getElementById('btn-register');
             if(btn) {
                 btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งข้อมูล...`;
@@ -622,7 +660,7 @@
                 const empId = document.getElementById('reg-emp-id').value.trim();
                 const fname = document.getElementById('reg-firstname').value.trim();
                 const lname = document.getElementById('reg-lastname').value.trim();
-                const pos = document.getElementById('reg-position').value;
+                const pos = document.getElementById('reg-position').value.trim();
                 const branch = document.getElementById('reg-branch').value.trim();
                 const zone = document.getElementById('reg-zone').value.trim();
                 const region = document.getElementById('reg-region').value.trim();
@@ -672,6 +710,7 @@
         }
 
         async function handleRequestResetPIN() {
+            if (!supabaseClient) return;
             const btn = document.getElementById('btn-reset');
             if(btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังส่งคำขอ...`;
             
@@ -697,6 +736,7 @@
         }
 
         async function handleSaveNewPINFromTemp() {
+            if (!supabaseClient) return;
             try {
                 const pin1 = document.getElementById('modal-new-pin-1').value.trim();
                 const pin2 = document.getElementById('modal-new-pin-2').value.trim();
@@ -720,28 +760,8 @@
             } catch(e) { console.error(e); }
         }
 
-        function handleLogout() {
-            currentUser = null;
-            const authEl = document.getElementById('auth-screen');
-            const mainEl = document.getElementById('main-app-screen');
-            const navEl = document.getElementById('emp-bottom-nav');
-            const badgeEl = document.getElementById('user-header-badge');
-            
-            if(authEl) authEl.classList.remove('hidden');
-            if(mainEl) mainEl.classList.add('hidden');
-            if(navEl) navEl.classList.add('hidden');
-            if(badgeEl) badgeEl.classList.add('hidden');
-            
-            const lEmp = document.getElementById('login-emp-id');
-            const lPin = document.getElementById('login-pin');
-            if(lEmp) lEmp.value = '';
-            if(lPin) lPin.value = '';
-            
-            showAuthSubForm('login');
-        }
-
         async function handleSaveSalesEntry() {
-            if (!currentUser) return;
+            if (!currentUser || !supabaseClient) return;
 
             const btn = document.getElementById('btn-save-sale');
             if(btn) {
@@ -757,6 +777,7 @@
                 const drawdownDate = document.getElementById('sale-drawdown-date').value;
                 const targetMonth = parseInt(document.getElementById('sale-target-month').value);
                 const agentCount = parseInt(document.getElementById('sale-agent-count').value) || 0;
+                const consultCount = parseInt(document.getElementById('sale-consult-count').value) || 0;
                 const details = document.getElementById('sale-details').value.trim();
 
                 if (!amount || isNaN(amount) || amount <= 0 || !drawdownDate) {
@@ -772,6 +793,7 @@
                     drawdown_date: drawdownDate,
                     target_month: targetMonth,
                     agent_count: agentCount,
+                    consult_count: consultCount,
                     details: details
                 }]);
 
@@ -784,6 +806,7 @@
                     document.getElementById('sale-amount').value = '';
                     document.getElementById('sale-cases-count').value = '1';
                     document.getElementById('sale-agent-count').value = '0';
+                    document.getElementById('sale-consult-count').value = '0';
                     document.getElementById('sale-details').value = '';
                     
                     setTimeout(() => switchEmpTab('dashboard'), 800);
@@ -799,8 +822,22 @@
             }
         }
 
+        async function deleteSalesRecord(recordId) {
+            if(!confirm('คุณแน่ใจหรือไม่ว่าจะลบรายการนี้?')) return;
+            try {
+                const { error } = await supabaseClient.from('sales_logs').delete().eq('id', recordId);
+                if(error) throw error;
+                showToast("ลบรายการสำเร็จ", "success");
+                updatePersonalDashboard();
+                updatePersonalStats();
+            } catch(e) {
+                console.error(e);
+                showToast("ไม่สามารถลบรายการได้", "error");
+            }
+        }
+
         async function updatePersonalStats() {
-            if (!currentUser) return;
+            if (!currentUser || !supabaseClient) return;
             try {
                 const { data: logs, error } = await supabaseClient
                     .from('sales_logs')
@@ -831,7 +868,7 @@
         }
 
         async function updatePersonalDashboard() {
-            if (!currentUser) return;
+            if (!currentUser || !supabaseClient) return;
             
             const setTxt = (id, txt) => { const e = document.getElementById(id); if(e) e.innerText = txt; };
             setTxt('pdash-total-amount', '...');
@@ -871,7 +908,7 @@
                 setTxt('pdash-total-logs', `${myLogs.length} รายการ`);
 
                 const elD = document.getElementById('chart-personal-doughnut');
-                if (elD) {
+                if (elD && typeof Chart !== 'undefined') {
                     const ctxDoughnut = elD.getContext('2d');
                     if (personalDoughnutChart) personalDoughnutChart.destroy();
                     personalDoughnutChart = new Chart(ctxDoughnut, {
@@ -889,7 +926,7 @@
                 }
 
                 const elB = document.getElementById('chart-personal-monthly-bar');
-                if (elB) {
+                if (elB && typeof Chart !== 'undefined') {
                     const ctxBar = elB.getContext('2d');
                     if (personalMonthlyBarChart) personalMonthlyBarChart.destroy();
                     personalMonthlyBarChart = new Chart(ctxBar, {
@@ -915,10 +952,11 @@
                                     <span class="text-[10px] text-gray-500 block mt-0.5">วันที่: ${l.drawdown_date} (ด. ${l.target_month})</span>
                                     ${l.details ? `<span class="text-[10px] text-gray-400 block italic mt-0.5"><i class="fa-regular fa-comment-dots"></i> ${l.details}</span>` : ''}
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right flex flex-col items-end">
                                     <span class="font-bold text-gray-800 block text-xs">${(l.amount||0).toLocaleString()} ฿</span>
                                     <span class="text-[10px] text-gray-500 font-medium block mt-0.5">${l.cases_count || 1} เคส</span>
                                     ${l.agent_count > 0 ? `<span class="text-[9px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded mt-1 inline-block">Agent: ${l.agent_count}</span>` : ''}
+                                    <button onclick="deleteSalesRecord(${l.id})" class="mt-2 text-rose-500 hover:text-rose-700 bg-rose-50 px-2 py-1 rounded text-[10px] font-bold"><i class="fa-solid fa-trash-can"></i> ลบ</button>
                                 </div>
                             </div>
                         `).join('');
@@ -936,7 +974,7 @@
 
         async function handleProfilePhotoUpload(event) {
             const file = event.target.files[0];
-            if (!file || !currentUser) return;
+            if (!file || !currentUser || !supabaseClient) return;
             
             const profNameEl = document.getElementById('profile-name');
             if(profNameEl) profNameEl.innerText = "กำลังอัปโหลด...";

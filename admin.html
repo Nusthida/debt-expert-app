@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -30,7 +31,6 @@
     <style>
         body { font-family: 'Prompt', sans-serif; background-color: #F1F5F9; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        /* Spinning Animation */
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #F68B1F;
@@ -130,7 +130,7 @@
                 <div id="emptab-resets" class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hidden">
                     <div class="p-3 md:p-4 border-b bg-slate-50">
                         <h3 class="font-bold text-xs text-gray-800"><i class="fa-solid fa-unlock-keyhole text-rose-500 mr-1"></i> คำขอลืมรหัสผ่าน / Reset PIN</h3>
-                        <p class="text-[10px] text-gray-500 mt-1">กดปุ่ม Gen PIN เพื่อสร้าง One-Time PIN 6 หลักให้พนักงานนำไปกรอกเข้าสู่ระบบ</p>
+                        <p class="text-[10px] text-gray-500 mt-1">กดปุ่ม Gen PIN เพื่อสร้าง PIN 6 หลัก และเตรียมเปิดโปรแกรมอีเมลส่งหาพนักงาน</p>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-[11px] md:text-xs text-gray-600 whitespace-nowrap">
@@ -170,9 +170,7 @@
                         <span class="font-bold text-ttbBlue block border-b border-blue-200 pb-2"><i class="fa-solid fa-plus-circle mr-1"></i> เพิ่มรายชื่อพนักงานเข้าสู่ Master List แบบรายบุคคล</span>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
                             <input type="text" id="add-m-id" placeholder="รหัสพนักงาน *" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue focus:ring-1 focus:ring-ttbBlue">
-                            <select id="add-m-pos" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue bg-white">
-                                <option value="">- ตำแหน่ง -</option><option value="BM">BM</option><option value="ABM">ABM</option><option value="CFSA">CFSA</option><option value="CLSA">CLSA</option><option value="CIFA">CIFA</option><option value="CLSM">CLSM</option><option value="สำนักงานใหญ่">สำนักงานใหญ่</option>
-                            </select>
+                            <input type="text" id="add-m-pos" placeholder="ตำแหน่ง เช่น BM" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue">
                             <input type="text" id="add-m-branch" placeholder="สาขา" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue">
                             <input type="text" id="add-m-zone" placeholder="เขต" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue">
                             <input type="text" id="add-m-region" placeholder="ภาค" class="px-2.5 py-2 border border-gray-300 rounded-lg outline-none focus:border-ttbBlue">
@@ -244,7 +242,7 @@
 
                     <div class="pt-3 border-t">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="block text-[11px] md:text-xs font-bold text-gray-800">เลือกเดือน (สามารถเลือกหลายเดือนเพื่อดูสะสมได้):</span>
+                            <span class="block text-[11px] md:text-xs font-bold text-gray-800">เลือกเดือน (เลือกได้หลายเดือน):</span>
                             <div class="space-x-2 text-[10px] md:text-[11px]"><button onclick="toggleAllMonths(true)" class="text-ttbBlue font-semibold hover:underline bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">เลือกทั้งหมด</button><button onclick="toggleAllMonths(false)" class="text-gray-500 font-semibold hover:underline bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">ล้างตัวเลือก</button></div>
                         </div>
                         <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5 text-[10px] md:text-xs">
@@ -360,7 +358,9 @@
                                     <th class="p-3 text-right">ยอดขาย (บาท)</th>
                                     <th class="p-3 text-center">เดือน</th>
                                     <th class="p-3 text-center">Agent</th>
+                                    <th class="p-3 text-center">ให้คำปรึกษา</th>
                                     <th class="p-3">รายละเอียดเพิ่มเติม</th>
+                                    <th class="p-3 text-center">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="table-sales-body" class="divide-y divide-gray-100"></tbody>
@@ -380,7 +380,11 @@
     <script>
         const dbHost = 'https://hnbnponofrcnratnbmnh.supabase.co';
         const publicToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYm5wb25vZnJjbnJhdG5ibW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODg1MDgsImV4cCI6MjEwMjQ2NDUwOH0.8b4ip6jdTxVNXpJQYuSfHHpPkKsxKoxRzOmPXLeYZZg';
-        const supabaseClient = window.supabase.createClient(dbHost, publicToken);
+        
+        let supabaseClient = null;
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(dbHost, publicToken);
+        }
 
         let toastTimeout;
         let adminMonthlyBarChart = null;
@@ -395,6 +399,9 @@
         });
 
         async function fetchInitialData(isRefresh = false) {
+            if (!supabaseClient) {
+                showToast("ไม่สามารถเชื่อมต่อ Supabase Library ได้", "error"); return;
+            }
             const loader = document.getElementById('admin-loader');
             const connStatus = document.getElementById('conn-status');
             
@@ -406,9 +413,9 @@
 
             try {
                 const [resUsers, resMaster, resSales] = await Promise.all([
-                    supabaseClient.from('users').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('users').select('*'),
                     supabaseClient.from('master_employees').select('*'),
-                    supabaseClient.from('sales_logs').select('*').order('drawdown_date', { ascending: false })
+                    supabaseClient.from('sales_logs').select('*')
                 ]);
 
                 if (resUsers.error) throw resUsers.error;
@@ -526,7 +533,7 @@
                             <td class="p-3">${u.position || '-'} / ${u.branch || '-'}</td>
                             <td class="p-3 font-mono text-ttbBlue text-[10px]">${u.emp_id}@ttbbank.com</td>
                             <td class="p-3 text-center">${u.temp_pin ? `<span class="font-mono bg-amber-100 text-amber-800 px-2 py-0.5 rounded border border-amber-300 font-bold tracking-widest">${u.temp_pin}</span>` : `<span class="text-gray-400 italic text-[10px]">ยังไม่สร้าง</span>` }</td>
-                            <td class="p-3 text-center"><button onclick="generateAndSendTempPIN('${u.emp_id}')" class="px-3 py-1.5 bg-ttbBlue hover:bg-ttbLightBlue text-white rounded-lg text-[10px] font-bold shadow transition-all active:scale-95"><i class="fa-solid fa-arrows-rotate mr-1"></i> Gen PIN</button></td>
+                            <td class="p-3 text-center"><button onclick="generateAndSendTempPIN('${u.emp_id}')" class="px-3 py-1.5 bg-ttbBlue hover:bg-ttbLightBlue text-white rounded-lg text-[10px] font-bold shadow transition-all active:scale-95"><i class="fa-solid fa-envelope mr-1"></i> Gen PIN</button></td>
                         </tr>
                     `).join('');
                 }
@@ -560,7 +567,7 @@
                 const tableSales = document.getElementById('table-sales-body');
                 if (tableSales) {
                     tableSales.innerHTML = sList.length === 0 ? 
-                        `<tr><td colspan="11" class="p-6 text-center text-gray-400">ไม่พบรายการยอดขาย</td></tr>` :
+                        `<tr><td colspan="13" class="p-6 text-center text-gray-400">ไม่พบรายการยอดขาย</td></tr>` :
                         sList.map(s => {
                         const u = globalUsers.find(usr => usr.emp_id === s.emp_id) || {};
                         const unitName = s.product_type === 'CYC' ? 'คัน' : s.product_type === 'CYH' ? 'บ้าน' : 'เคส';
@@ -576,7 +583,9 @@
                                 <td class="p-3 text-right font-bold text-gray-800">${(s.amount||0).toLocaleString()} <span class="text-[9px] text-gray-400">฿</span></td>
                                 <td class="p-3 text-center text-gray-500">ด. ${s.target_month}</td>
                                 <td class="p-3 text-center">${s.agent_count > 0 ? `<span class="bg-emerald-50 text-emerald-600 font-semibold px-1.5 py-0.5 rounded text-[10px]">${s.agent_count}</span>` : '-'}</td>
+                                <td class="p-3 text-center font-bold text-ttbBlue">${s.consult_count || 0}</td>
                                 <td class="p-3 text-gray-400 italic text-[10px] truncate max-w-[150px]">${s.details || '-'}</td>
+                                <td class="p-3 text-center"><button onclick="deleteAdminSalesRecord(${s.id})" class="text-rose-500 hover:bg-rose-50 p-1.5 rounded transition-all"><i class="fa-solid fa-trash-can"></i></button></td>
                             </tr>
                         `;
                     }).join('');
@@ -660,7 +669,7 @@
                 if(elCountText) elCountText.innerText = `${filteredLogs.length} รายการบันทึก`;
 
                 const elBar = document.getElementById('chart-admin-monthly-bar');
-                if (elBar) {
+                if (elBar && typeof Chart !== 'undefined') {
                     const ctxBar = elBar.getContext('2d');
                     if (adminMonthlyBarChart) adminMonthlyBarChart.destroy();
                     adminMonthlyBarChart = new Chart(ctxBar, {
@@ -682,7 +691,7 @@
                 }
 
                 const elPie = document.getElementById('chart-admin-product-pie');
-                if (elPie) {
+                if (elPie && typeof Chart !== 'undefined') {
                     const ctxPie = elPie.getContext('2d');
                     if (adminProductPieChart) adminProductPieChart.destroy();
                     adminProductPieChart = new Chart(ctxPie, {
@@ -731,6 +740,7 @@
         }
 
         async function approveUser(empId) {
+            if (!supabaseClient) return;
             try {
                 const { error } = await supabaseClient.from('users').update({ status: 'Active' }).eq('emp_id', empId);
                 if (error) throw error;
@@ -743,12 +753,19 @@
         }
 
         async function generateAndSendTempPIN(empId) {
+            if (!supabaseClient) return;
             try {
                 const randomPIN = Math.floor(100000 + Math.random() * 900000).toString();
                 const { error } = await supabaseClient.from('users').update({ temp_pin: randomPIN }).eq('emp_id', empId);
                 if (error) throw error;
+                
                 showToast(`สร้าง PIN ชั่วคราว: ${randomPIN} สำเร็จ`, "success");
                 fetchInitialData();
+
+                const subject = encodeURIComponent("รหัส PIN ชั่วคราวระบบคีย์ยอดขาย Debt Expert");
+                const body = encodeURIComponent(`คุณได้ขอ Reset Pin ระบบ คีย์ข้อมูลยอดรวบหนี้\nรหัส Pin ของคุณ คือ "${randomPIN}"`);
+                window.location.href = `mailto:${empId}@ttbbank.com?subject=${subject}&body=${body}`;
+
             } catch(e) {
                 console.error(e);
                 showToast("ไม่สามารถสร้างรหัส PIN ได้", "error");
@@ -756,6 +773,7 @@
         }
 
         async function addSingleMasterEmp() {
+            if (!supabaseClient) return;
             const btn = document.getElementById('btn-add-master');
             if(btn) btn.disabled = true;
 
@@ -785,6 +803,7 @@
         }
 
         async function removeMasterEmpID(id) {
+            if (!supabaseClient) return;
             if(!confirm(`คุณแน่ใจหรือไม่ว่าจะลบสิทธิ์พนักงานรหัส ${id} ?`)) return;
 
             try {
@@ -798,10 +817,24 @@
             }
         }
 
+        async function deleteAdminSalesRecord(recordId) {
+            if (!supabaseClient) return;
+            if(!confirm('คุณแน่ใจหรือไม่ว่าจะลบรายการยอดขายนี้? (ไม่สามารถกู้คืนได้)')) return;
+            try {
+                const { error } = await supabaseClient.from('sales_logs').delete().eq('id', recordId);
+                if(error) throw error;
+                showToast("ลบรายการสำเร็จ", "success");
+                fetchInitialData(true);
+            } catch(e) {
+                console.error(e);
+                showToast("ไม่สามารถลบรายการได้", "error");
+            }
+        }
+
         function exportMasterEmployeesCSV() {
-            let csv = "Emp_ID,Position,Branch,Zone,Region\\n";
+            let csv = "\uFEFFEmp_ID,Position,Branch,Zone,Region\r\n";
             globalMaster.forEach(m => {
-                csv += `${m.emp_id},${m.position || ''},${m.branch || ''},${m.zone || ''},${m.region || ''}\\n`;
+                csv += `"${m.emp_id}","${m.position || ''}","${m.branch || ''}","${m.zone || ''}","${m.region || ''}"\r\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -814,6 +847,7 @@
         }
 
         function importMasterEmployeesCSV(event) {
+            if (!supabaseClient) return;
             const file = event.target.files[0];
             if (!file) return;
 
@@ -821,21 +855,21 @@
             reader.onload = async function(e) {
                 try {
                     const text = e.target.result;
-                    const lines = text.split('\\n');
+                    const lines = text.split(/\r?\n/);
                     let rowsToInsert = [];
 
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim();
                         if (!line) continue;
                         const cols = line.split(',');
-                        const empId = cols[0] ? cols[0].trim() : '';
+                        const empId = cols[0] ? cols[0].replace(/"/g, '').trim() : '';
                         if (empId) {
                             rowsToInsert.push({
                                 emp_id: empId,
-                                position: cols[1] ? cols[1].trim() : '',
-                                branch: cols[2] ? cols[2].trim() : '',
-                                zone: cols[3] ? cols[3].trim() : '',
-                                region: cols[4] ? cols[4].trim() : ''
+                                position: cols[1] ? cols[1].replace(/"/g, '').trim() : '',
+                                branch: cols[2] ? cols[2].replace(/"/g, '').trim() : '',
+                                zone: cols[3] ? cols[3].replace(/"/g, '').trim() : '',
+                                region: cols[4] ? cols[4].replace(/"/g, '').trim() : ''
                             });
                         }
                     }
@@ -857,10 +891,11 @@
         }
 
         function exportSalesCSV() {
-            let csv = "Drawdown_Date,Emp_ID,First_Name,Last_Name,Position,Branch,Zone,Region,Product_Type,Cases_Count,Amount_THB,Target_Month,Agent_Count,Details\\n";
+            let csv = "\uFEFFDrawdown_Date,Emp_ID,First_Name,Last_Name,Position,Branch,Zone,Region,Product_Type,Cases_Count,Amount_THB,Target_Month,Agent_Count,Consult_Count,Details\r\n";
             globalSales.forEach(s => {
                 const u = globalUsers.find(usr => usr.emp_id === s.emp_id) || {};
-                csv += `${s.drawdown_date},${s.emp_id},${u.first_name||''},${u.last_name||''},${u.position||''},${u.branch||''},${u.zone||''},${u.region||''},${s.product_type},${s.cases_count||1},${s.amount||0},${s.target_month},${s.agent_count||0},"${s.details || ''}"\\n`;
+                const details = (s.details || '').replace(/"/g, '""');
+                csv += `"${s.drawdown_date}","${s.emp_id}","${u.first_name||''}","${u.last_name||''}","${u.position||''}","${u.branch||''}","${u.zone||''}","${u.region||''}","${s.product_type}","${s.cases_count||1}","${s.amount||0}","${s.target_month}","${s.agent_count||0}","${s.consult_count||0}","${details}"\r\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
